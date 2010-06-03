@@ -1,0 +1,268 @@
+
+インターネット上に存在するテキスト翻訳サービスを利用して
+Emacs上で文字列の翻訳を行うelispパッケージ.
+
+* 設定例
+
+text-translator.el と text-translator-vars.el をロードパスの
+通った所に置く.
+
+** autoload を使う
+
+(require 'text-translator-load)
+
+** require を使う
+
+;;;; autoload ではなく, require を使う場合
+(require 'text-translator)
+
+require でも autoload でも, どちらで大丈夫です.
+
+** プリフィックスキーを変更する
+
+;; プリフィックスキーの設定例 : M-n にする場合
+(setq text-translator-prefix-key "\M-n")
+
+** グローバルキーを設定する
+
+;; グローバルキーの設定例
+(global-set-key "\C-x\M-t" 'text-translator)
+(global-set-key "\C-x\M-T" 'text-translator-translate-last-string)
+
+** メジャーモード特有のキーを追加する
+
+;; メジャーモード特有のキーを追加する設定例
+(add-hook
+ 'text-translator-mode-hook
+ (lambda()
+   ;;  プリフィックスキーを変更していないならば, C-c M-a で実行.
+   (define-key text-translator-mode-pkey-map "\M-a" 'text-translator-translate-recent-type)))
+
+** プロキシを使用する
+
+;; ;; プロキシを使用する場合の設定例
+;; ;; 環境変数 HTTP_PROXY を設定してある場合は, 設定不要.
+;; (setq text-translator-proxy-server "proxy.hogehoge.com")
+;; (setq text-translator-proxy-port   8080)
+
+** 自動選択を使用する(日本語/英語のみ)
+
+;; 自動選択に使用する関数を設定
+(setq text-translator-auto-selection-func
+      'text-translator-translate-by-auto-selection-enja)
+;; グローバルキーを設定
+(global-set-key "\C-xt" 'text-translator-translate-by-auto-selection)
+
+* メジャーモードでのキー割り当て
+
+text-translator-mode 上で prefix-key C-h とすることで見れる.
+設定した prefix-key の後に以下のキーが割り当てられている.
+
+\C-q   text-translator-quit
+\C-a   text-translator-translate-recent-type
+\C-l   text-translator-display-last-string
+\C-d   text-translator-translate-default
+\C-s   text-translator-toggle-leave-string
+
+* 翻訳サイト
+
+- google.com
+- yahoo.com
+- freetranslation.com
+- livedoor.com
+- fresheye.com
+- excite.co.jp
+- yahoo.co.jp
+- ocn.ne.jp
+- lou5.jp
+
+* interactive な関数
+
+M-x text-translator
+   翻訳を行う関数.
+   リージョンの選択が行われていると, その範囲を翻訳する.
+   リージョンの選択が行われていないと, 翻訳したいテキストの入力を促す.
+   接頭辞として, C-u を与えると, 使用する翻訳サイト,
+   翻訳形式の選択を促す.
+   接頭辞を与えずに起動した際に使用される翻訳サイトは,
+   初回は, text-translator-default-engine の値が使用される.
+   2回目以降は, 前回使用した翻訳サイトを使用する.
+   この前回使用した, 翻訳サイトは, session.el を併用していれば,
+   次回 Emacs 起動時にも引き継がれる.
+
+M-x text-translator-translate-last-string
+   前回, 翻訳に使用した文字列を用いて, 翻訳を行う関数.
+   起動すると, 翻訳に使用するサイトの選択を促される.
+
+M-x text-translator-quit
+    翻訳結果を表示するバッファ *translated* を閉じる関数.
+    ウィンドウが複数に分割されていれば, *translated* を閉じる.
+    ウィンドウが複数に分割されておらず,
+    表示されているバッファが *translated* のみならば,
+    他のバッファに切り替える.
+
+M-x text-translator-toggle-leave-string
+    翻訳文を翻訳結果に残すかどうかを切り替える関数.
+    変数 text-translator-leave-string をトグルする.
+    (注:) 翻訳文は, 翻訳結果の文章ではなく, その前の翻訳したい文章のこと.
+
+M-x text-translator-display-last-string
+    前回使用した翻訳文を表示する関数.
+    前置引数なしで起動すると, ミニバッファに表示し,
+    前置引数ありで起動すると, バッファにその翻訳文を挿入する.
+
+M-x text-translator-translate-recent-type
+    前回使用した言語に対応する形式で翻訳をする関数.
+    例えば, 前回 excite.co.jp_enja で翻訳をしたならば,
+    ○○_enja という翻訳形式の中から翻訳を行う.
+    この関数を起動すると,
+    その ○○_enja の中からどの形式を使用するかの選択が促される.
+
+M-x text-translator-translate-default
+    デフォルトの翻訳形式で翻訳を行う関数.
+    デフォルトの翻訳形式は, 初期設定では, excite_enja となっている.
+
+M-x text-translator-translate-by-auto-selection
+    翻訳形式を自動的に選択して翻訳を行う関数.
+    自動選択には,
+    変数 text-translator-auto-selection-func に格納されてい
+    る関数を使用する.
+    text-translator-auto-selection-func が nil ならば, 通常
+    の関数 text-translator と同様に振る舞う.
+
+* 設定できる変数
+
+text-translator-prefix-key
+    text-translator-mode のプリフィックスキー.
+    デフォルトでは, C-c に割り当てられている.
+
+text-translator-auto-window-adjust
+    翻訳結果のバッファが表示されている場合,
+    翻訳結果を表示するための分割して出現するバッファの高さを
+    翻訳結果の行数に従って調節するかどうか.
+    デフォルトで t. 調節するとなっている.
+
+text-translator-window-min-height
+    翻訳結果表示バッファの最小の高さを指定する.
+    デフォルト値は4である.
+
+text-translator-leave-string
+    翻訳したい文字列を翻訳結果のバッファに残すかどうか.
+    デフォルトで nil. 残さないとなっている.
+
+text-translator-pre-string-replace-alist
+    翻訳サイトに投入する文字列をここに記載されている規則に従い
+    置き換える.
+
+text-translator-post-string-replace-alist
+    翻訳結果の文字列をここに記載されている規則に従い置き換える.
+
+text-translator-proxy-server
+  プロキシを介して接続する場合に使用するプロキシサーバを指定.
+  初期値は, nil. 使用しないとなっている.
+  指定の形式は, "proxy.hogehoge.com" のようにする.
+  環境変数 HTTP_PROXY を設定してある場合, 値を記入する必要はない
+
+text-translator-proxy-port
+  プロキシを介して接続する場合に使用するプロキシポート番号を指定.
+  初期値は, 8080 となっている.
+  指定の形式は, 10080 のように数値をそのまま指定する.
+  環境変数 HTTP_PROXY を設定してある場合, 値を記入する必要はない
+
+text-translator-proxy-user
+  Basicプロキシ認証ユーザ名.
+  初期値は, nil となっている.
+
+text-translator-proxy-password
+  Basicプロキシ認証パスワード.
+  初期値は, nil となっている.
+
+text-translator-site-data-alist
+    テキスト翻訳に使用するサイトの設定を記述してある連想リスト.
+    記述されている内容は, これ.
+
+    (「翻訳サイトの名前」
+     「翻訳サイトのホスト」
+     「POSTから始まる一文」
+     「POSTで投入するアドレス 翻訳前の文字列を埋め込む所は %s を記述する」
+     「デコードに使用する文字コード」
+     「翻訳後の文字列を抜き取るために使用する正規表現」
+     もし くは,
+     「翻訳後の文字列を抜き取るために使用する関数」)
+
+    翻訳サイトの名前は, domain アンダースコア 投入言語(2文字)
+    結果言語(2文字) の形式にして下さい
+    言語を表わす2文字は, 現在のところ以下のようになっていま
+    す.
+
+        en : English
+        ja : Japanese
+        ch : Chinese(simplifiedChinese)
+        tw : Chinese(traditionalChinese)
+        ko : Korean
+        es : Spanish
+        fr : French
+        de : German
+        it : Italian
+        ar : Arabia
+        pt : Portuguese
+        ru : Russian
+        nl : Dutch
+        el : Greek
+        no : Norwegian
+
+text-translator-default-engine
+  デフォルトで使用する翻訳サイト.
+  初期値は, google.com_enja. Google の英語→日本語翻訳となっ
+  ている
+
+text-translator-user-agent
+  デフォルト値は, 以下の通りで, Firefox にしてある.
+  "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4"
+  この設定は, Windows の Firefox 2.0.0.4 となっている.
+  Linux の方が良い場合は, 以下にする.
+  "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4"
+  Yahoo を利用した翻訳が出来なくなっていたので, 上記のものに変更した.
+  以前のものは, これ↓になる.
+  もし, またできなくなるようなことがあったら,
+  この値を変更してみると良いかもしれない.
+  "Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.8) Gecko/20051111 Firefox/1.5"
+  "Mozilla/5.0 (X11; U; Linux i686; ja; rv:1.8.0.4) Gecko/20060508 Firefox/1.5.0.4"
+
+text-translator-mode-hook
+  text-translator-mode 終了時に実行されるフック.
+
+text-translator-auto-selection-func
+  関数 text-translator-translate-by-auto-selection で自動選
+  択に使用する関数. デフォルトの値は, nil.
+
+text-translator-do-fill-region
+  デフォルトでnil. nilでなかったならば, 翻訳前の文字から改行
+  を削除し, 翻訳後に fill-paragraphで見た目を整える処理をす
+  る.  行単位で翻訳をする翻訳エンジン対策.
+
+text-translator-space-division-languages
+  単語が空白で区切られる言語のリスト.
+  この変数の値は以下の通りです.
+
+  en, es, fr, de, it, pt, ru, nl, el, no
+
+* コメント
+
+バッファを上下に分割して表示するので, 文字が左端を越える場合
+は折り返した方が見易いと思うので,
+truncate-partial-width-windows は, nil に設定しておいた方が
+便利かもしれない.
+
+* 謝辞
+
+この text-translator.el を作成するにあたり, ブログのコメント
+やメールでアドバイスを頂きました. ありがとうございます.
+
+# README.ja ends here
+
+# Local Variables:
+# mode: outline
+# mode: auto-fill
+# Coding: iso-2022-7bit
+# End:
