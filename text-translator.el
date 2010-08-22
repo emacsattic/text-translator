@@ -200,7 +200,7 @@ specified site, and receives translation result."
       (process-send-string
        proc
        (concat
-        "POST " "http://" (nth 1 type) (nth 2 type) "\r\n"
+        "POST " (nth 2 type) "\r\n"
         (and text-translator-proxy-server
              text-translator-proxy-user
              text-translator-proxy-password
@@ -543,5 +543,5 @@ Otherwise return a translation site name."
 ;;; text-translator.el ends here
 
 ;; Local Variables:
-;; Coding: iso-2022-7bit
+;; Coding: utf-8
 ;; End:
