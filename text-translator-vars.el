@@ -26,7 +26,7 @@
 
 ;;; Code:
 
-(defconst text-translator-version "0.7.2"
+(defconst text-translator-version "0.7.3"
   "version numbers of this version of text-translator")
 
 (defconst text-translator-buffer "*translated*"
@@ -124,8 +124,9 @@
      "js=n&prev=_t&hl=ja&ie=UTF-8&text=%s&file=&sl=%o&tl=%t"
      utf-8-dos
      (lambda ()
+       ;; ( . 1)
        (text-translator-extract-tag-exclusion-string
-        "<textarea name=utrans wrap=SOFT dir=\"[lr]t[lr]\" id=suggestion style=\"[^\"]*\">\\(.*\\)</textarea"))
+        "<span id=result_box[^>]*>\\(\\(<span [^>]*>\\([^<]\\|<br>\\)*</span>\\)+\\)</span>"))
      (("en" . "ja") ("ja" . "en")
       ("en" . "es") ("es" . "en")
       ("en" . "fr") ("fr" . "en")
