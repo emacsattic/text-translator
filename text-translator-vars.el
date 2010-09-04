@@ -124,7 +124,6 @@
      "js=n&prev=_t&hl=ja&ie=UTF-8&text=%s&file=&sl=%o&tl=%t"
      utf-8-dos
      (lambda ()
-       ;; ( . 1)
        (text-translator-extract-tag-exclusion-string
         "<span id=result_box[^>]*>\\(\\(<span [^>]*>\\([^<]\\|<br>\\)*</span>\\)+\\)</span>"))
      (("en" . "ja") ("ja" . "en")
