@@ -246,7 +246,7 @@ specified site, and receives translation result."
            "\r\n"
            post-str "\r\n"))
         "\r\n"))
-      ;; Display only once (Countermesure for text-translator-all).
+      ;; Display only once (Countermesure for te).
       (when (= 1 (length text-translator-processes-alist))
         (message "Translating..."))
       ;; Todo: Add a process of when `sync' was t.
