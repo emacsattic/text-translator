@@ -1,6 +1,6 @@
 ;;; text-translator.el --- Text Translator
 
-;; Copyright (C) 2007-2010  khiker
+;; Copyright (C) 2007-2011  khiker
 
 ;; Author: khiker <khiker.mail+elisp@gmail.com>
 ;;         plus   <MLB33828@nifty.com>
@@ -30,7 +30,10 @@
 ;;; Code:
 
 (require 'text-translator-vars)
+(require 'text-translator-window)
+;; (require 'text-translator-popup)
 
+;; Todo: Modify a process of `last'.
 (defun text-translator (arg &optional last engine-or-func)
   "The function which does text translation.
 Use Excite, Google and so translation site.
@@ -53,40 +56,53 @@ Use Excite, Google and so translation site.
    (If `text-translator-engine-history' is nil,
     use `text-translator-default-engine'.)"
   (interactive "P")
+  ;; Todo: Deleted variable.
   (add-to-list 'text-translator-engine-history text-translator-default-engine)
   (let ((minibuffer-history text-translator-engine-history)
         (engine (text-translator-check-valid-translation-engine
-                 engine-or-func (car text-translator-engine-history)))
+                 engine-or-func
+                 ;; Todo: Deleted variable
+                 (car text-translator-engine-history)))
         str)
     ;; If prefix-arg is non-nil, change translation type.
     (when (or arg last)
       (setq engine (completing-read
                     (format "Select translation engine (default %s): " engine)
                     text-translator-site-data-alist nil t nil nil engine)))
+    ;; Initialize (init global variable, delete running processess etc...).
+    (text-translator-proc-clear)
     (setq str
           (cond
            (last
+            ;; Todo: Delete this process (`last').
             text-translator-last-string)
            (t
             (text-translator-region-or-read-string
-             (format "Enter string translated by %s: " engine)))))
+             (format "Enter string translated by %s: " engine))))
+          text-translator-all-site-number   1
+          text-translator-all-results       nil
+          text-translator-processes-alist   nil
+          text-translator-all-before-string nil)
+    (add-to-history 'text-translator-engine-history engine)
     (text-translator-client
      (text-translator-check-valid-translation-engine
       (and (functionp engine-or-func) (funcall engine-or-func engine str))
       engine)
-     str)))
+     str)
+    (text-translator-timeout-start)))
 
 (defun text-translator-translate-by-auto-selection (arg)
-  "Function that translates by auto selection of translation engine.
-Function that select automatically is value of `text-translator-auto-selection-func'."
+  "Function that translates by auto selection of translation
+engine.  Function that select automatically is value of
+`text-translator-auto-selection-func'."
   (interactive "P")
   (text-translator arg nil text-translator-auto-selection-func))
 
 (defun text-translator-translate-by-auto-selection-enja (engine str)
-  "Automatic selection function for English to Japanese(or Japanese to English)
-translation.
-If alphabet ratio is over 40%, select engine which is translating from English to Japanese.
-Otherwise, from Japanese to English."
+  "Automatic selection function for English to Japanese(or Japanese to
+English) translation.
+If alphabet ratio is over 40%, select engine which is translating from
+English to Japanese.  Otherwise, from Japanese to English."
   (setq str (or str ""))
   (format
    "%s_%s"
@@ -96,12 +112,12 @@ Otherwise, from Japanese to English."
           40)
        "enja" "jaen")))
 
+;; Todo: To replace to function that treates history more generally.
 (defun text-translator-translate-last-string ()
   "The function to translate in the translation site that
 I choose with the character string that I translated in the last time."
   (interactive)
   (text-translator nil t))
-
 
 (defun text-translator-region-or-read-string (&optional prompt)
   "If mark is active, return the region, otherwise, read string with PROMPT."
@@ -116,33 +132,34 @@ I choose with the character string that I translated in the last time."
 the selected type."
   (interactive "P")
   (let ((hash text-translator-sitedata-hash)
+        (str (or str
+                 (text-translator-region-or-read-string)))
         keys)
-    (setq str (or str (text-translator-region-or-read-string)))
-    (when (or (null hash)
-              arg)
-      (setq text-translator-sitedata-hash
-            (text-translator-update-hashtable))
-      (setq hash text-translator-sitedata-hash))
+    ;; Initalize global variable.
+    (text-translator-proc-clear)
+    (setq text-translator-all-results       nil
+          text-translator-all-site-number   nil
+          text-translator-processes-alist   nil
+          text-translator-all-before-string nil)
+    ;; confirm and update translation site data.
+    (when (or (null hash) arg)
+      (setq text-translator-sitedata-hash (text-translator-update-hashtable)
+            hash text-translator-sitedata-hash))
     (maphash '(lambda (x y)
                 (setq keys (cons x keys)))
              hash)
-    (setq key (or key (completing-read "Select type: " keys nil t)))
-    (when key
-      (save-selected-window
-        (pop-to-buffer text-translator-buffer)
-        (setq buffer-read-only nil)
-        (erase-buffer)
-        (text-translator-mode))
+    (when (setq key (or key
+                        (completing-read "Select type: " keys nil t)))
       (let ((sites (gethash key hash)))
-        (setq text-translator-last-string str)
-        (setq text-translator-search-regexp-or-func
-              (concat "_" key))
+        (setq text-translator-all-site-number (length sites))
         (dolist  (i sites)
-          (text-translator-client i str t))))))
+          (text-translator-client i str t))
+        (text-translator-timeout-start)))))
 
 (defun text-translator-all-by-auto-selection (arg)
-  "The function to translate in all of translate sites, whose translation engine is selected automatically.
-The selection function is the value of `text-translator-auto-selection-func'."
+  "The function to translate in all of translate sites, whose
+translation engine is selected automatically.  The selection function
+is the value of `text-translator-auto-selection-func'."
   (interactive "P")
   (let ((str (text-translator-region-or-read-string)))
     (text-translator-all
@@ -150,50 +167,51 @@ The selection function is the value of `text-translator-auto-selection-func'."
      (substring (funcall text-translator-auto-selection-func "" str) 1)
      str)))
 
-(defun text-translator-client (engine str &optional all)
+(defun text-translator-client (engine str &optional all sync)
   "Function that throws out words and phrases that want to translate into
 specified site, and receives translation result."
   (let* ((history-delete-duplicates t)
-         (buf (cond (all
-                     (concat text-translator-work-buffer
-                             (replace-regexp-in-string "_.*"
-                                                       ""
-                                                       engine)))
-                    (t
-                     text-translator-work-buffer)))
-         (alist
-          (cond
-           ((not text-translator-do-fill-region)
-            text-translator-pre-string-replace-alist)
-           ;; for example, if engine is "excite.co.jp_enja",
-           ;; this code returns "en".
-           ((member (substring
-                     (text-translator-get-engine-type-or-site engine) 0 2)
-                    text-translator-space-division-languages)
-            ;; replace "\n" to " ".
-            (append '(("\n" . " ") ("\r" . ""))
-                    text-translator-pre-string-replace-alist))
-           (t
-            ;; replace "\n" to "".
-            (append '(("\n" . "") ("\r" . ""))
-                    text-translator-pre-string-replace-alist))))
-         (str (text-translator-replace-string str alist))
+         (work-buf (concat " " text-translator-buffer engine))
+         (str (text-translator-replace-string
+               str
+               (cond
+                ((not text-translator-do-fill-region)
+                 text-translator-pre-string-replace-alist)
+                ;; for example, if engine is "excite.co.jp_enja",
+                ;; this code returns "en".
+                ((member (substring
+                          (text-translator-get-engine-type-or-site engine) 0 2)
+                         text-translator-space-division-languages)
+                 ;; replace "\n" to " ".
+                 (append '(("\n" . " ") ("\r" . ""))
+                         text-translator-pre-string-replace-alist))
+                (t
+                 ;; replace "\n" to "".
+                 (append '(("\n" . "") ("\r" . ""))
+                         text-translator-pre-string-replace-alist)))))
          (type (assoc engine text-translator-site-data-alist))
-         (proc (open-network-stream "Web Connection" buf
+         (proc (open-network-stream (concat text-translator-buffer engine)
+                                    work-buf
                                     (or text-translator-proxy-server
                                         (nth 1 type))
                                     (or (and text-translator-proxy-server
                                              text-translator-proxy-port)
                                         80)))
-         ;;(process-connection-type nil)
+         (process-connection-type nil)
          (enc-str (text-translator-url-encode-string str (nth 4 type)))
          (post-str (if (nth 3 type) (format (nth 3 type) enc-str) nil))
          (truncate-partial-width-windows nil))
-    (unless all
-      (add-to-history 'text-translator-engine-history engine)
-      (setq text-translator-search-regexp-or-func (nth 5 type))
-      (setq text-translator-last-string str))
-    (with-current-buffer (get-buffer-create buf)
+    ;; Initalize temporary variables
+    (setq text-translator-all-before-string
+          (cons '((process-name proc) engine str)
+                text-translator-all-before-string)
+          text-translator-processes-alist
+          (cons (cons (process-name proc) nil)
+                text-translator-processes-alist)
+          text-translator-all-results
+          (cons (cons (process-name proc) nil)
+                text-translator-all-results))
+    (with-current-buffer (get-buffer-create work-buf)
       (erase-buffer)
       (set-process-coding-system proc (nth 4 type) 'binary)
       (set-process-filter proc 'text-translator-client-filter)
@@ -216,8 +234,6 @@ specified site, and receives translation result."
                               text-translator-proxy-password))))
         "HOST: " (nth 1 type) "\r\n"
         "User-Agent: " text-translator-user-agent "\r\n"
-;;        "Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" "\r\n"
-;;        "Accept-Language: ja,en-us;q=0.7,en;q=0.3" "\r\n"
         "Accept-Encoding: identity\r\n"
         "Accept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7\r\n"
         "Keep-Alive: 300" "\r\n"
@@ -231,114 +247,82 @@ specified site, and receives translation result."
            post-str "\r\n"))
         "\r\n"))
       (message "Translating...")
-      (unless (or all
-                  text-translator-display-popup)
-        (save-selected-window
-          (pop-to-buffer text-translator-buffer)
-          (setq buffer-read-only nil)
-          (erase-buffer)
-          (text-translator-mode)
-          (setq mode-line-buffer-identification
-                `("%b [" ,(car text-translator-engine-history) "]")))))))
+      ;; Todo: Add a process of when `sync' was t.
+      )))
 
 (defun text-translator-client-filter (proc str)
-  (let ((regex-or-func text-translator-search-regexp-or-func)
-        bname all-flag)
+  (let (buf-name buf-bytes content-len chunk-len all parse-method)
     (with-current-buffer (process-buffer proc)
       (goto-char (process-mark proc))
-      (insert (format "%s" str))
+      (insert str)
       (set-marker (process-mark proc) (point))
-      (setq bname (buffer-name))
-      (setq all-flag (not (string= bname text-translator-work-buffer)))
-      (when all-flag
-        (setq regex-or-func
-              (nth 5
-                   (assoc (concat
-                           (substring bname
-                                      (length text-translator-work-buffer)
-                                      (length bname))
-                           regex-or-func)
-                          text-translator-site-data-alist))))
+      ;; Initialize a variable
+      (setq buf-name     (buffer-name)
+            all          (> text-translator-all-site-number 1)
+            content-len  (cadr (assoc "Content-Length"
+                                      (text-translator-proc-header-get
+                                       (process-name proc))))
+            buf-bytes    (if content-len (string-bytes (buffer-string)))
+            parse-method (nth 5
+                              (assoc
+                               (substring buf-name
+                                          ;; Plus a 1 space " " length.
+                                          (1+ (length text-translator-buffer))
+                                          (length buf-name))
+                               text-translator-site-data-alist)))
+      ;; Header line or chunk-length
+      (cond
+       ((null (text-translator-proc-header-get (process-name proc)))
+        (setq chunk-len (text-translator-proc-header-parse proc buf-name)))
+       (t
+        (when (null content-len)
+          (setq chunk-len (text-translator-proc-chunk-get buf-name)))))
+      ;; Extract a translated string.
       (setq str (text-translator-replace-string
                  (or (cond
-                      ((functionp regex-or-func)
-                       (funcall regex-or-func))
-                      ((re-search-backward regex-or-func nil t)
+                      ((functionp parse-method)
+                       (funcall parse-method))
+                      ((re-search-backward parse-method nil t)
                        (match-string 1)))
                      "")
-                 text-translator-post-string-replace-alist))
-      (unless (string= "" str)
-        (delete-process proc)
-        (setq bname (buffer-name))
-        (setq all-flag (not (string= bname text-translator-work-buffer)))
-        (when (or all-flag
-                  (not text-translator-display-popup))
-          (text-translator-display-window str bname all-flag))))
-    ;; To display in popup-tip, buffer is out of with-current-buffer.
-    (when (and (not (string= "" str))
-               (not all-flag)
-               (fboundp 'popup-tip)
-               (eq text-translator-display-popup t))
-      (text-translator-display-popup str))))
+                 text-translator-post-string-replace-alist)))
+    ;; Clean up
+    (when (or (not (string= "" str))
+              (and content-len
+                   (> 100 (abs (- buf-bytes (string-to-number content-len)))))
+              (and chunk-len (string= "0" chunk-len)))
+      (delete-process proc)
+      (unless text-translator-debug
+        ;; Todo: Should I save a log before killing a buffer?
+        (kill-buffer buf-name))
+      (when (string= "" str)
+        (setq str "TRANSLATION: FAILED")))
+    ;; Display translated string
+    (when (not (string= "" str))
+      (when text-translator-all-results
+        (when (assoc (process-name proc) text-translator-all-results)
+          (setcdr (assoc (process-name proc) text-translator-all-results) str))
+        ;; Todo: To add a adding history routine that use a
+        ;; `text-translator-all-before-string'.
+        (text-translator-display all)))))
 
-(defun text-translator-display-window (str buf all-flag)
-  (let ((window (get-buffer-window text-translator-buffer))
-        (window-min-height
-         (if (> text-translator-window-min-height (/ (frame-height) 2))
-             (/ (frame-height) 2)
-           (1+ text-translator-window-min-height))))
-    (set-buffer text-translator-buffer)
-    (setq buffer-read-only nil)
+(defun text-translator-display (all)
+  (cond
+   (all
+    (when (not (member 'nil (mapcar 'cdr text-translator-all-results)))
+      (text-translator-timeout-stop)
+      (cond
+       (text-translator-display-function
+        (funcall text-translator-display-function))
+       (t
+        (text-translator-window-display)))))
+   (t
+    (text-translator-timeout-stop)
     (cond
-     (all-flag
-      (insert (concat
-               (propertize
-                (format "-----  %s  -----\n"
-                        (substring buf
-                                   (length text-translator-work-buffer)
-                                   (length buf)))
-                'face font-lock-keyword-face)
-               str "\n\n")))
-     (t (when text-translator-leave-string
-          (insert
-           (concat
-            (propertize "-----   Original  -----\n"
-                        'face font-lock-keyword-face)
-            text-translator-last-string
-            "\n\n"
-            (propertize "***** Translation *****\n"
-                        'face font-lock-keyword-face))))
-        (insert (concat str "\n"))
-        (when text-translator-do-fill-region
-          (goto-char (- (point) (/ (length str) 2)))
-          (call-interactively 'fill-paragraph))
-        (set-buffer-modified-p nil)
-        ;; adjust window height
-        (when (and text-translator-auto-window-adjust
-                   (window-live-p window))
-          (balance-windows)
-          (shrink-window-if-larger-than-buffer window))
-        (message "") ; prevent minibuffer from becoming two line.
-        (ding)
-        (message "Translating...done")))))
-
-(defun text-translator-display-popup (str)
-  (let ((read-only-p buffer-read-only))
-    (setq str (with-temp-buffer
-                (insert str)
-                (when text-translator-do-fill-region
-                  (goto-char (- (point) (/ (length str) 2)))
-                  (call-interactively 'fill-paragraph))
-                (buffer-string)))
-    (ding)
-    (message "Translating...done")
-    (if read-only-p
-        ;; temporay cancel buffer-read-only
-        (unwind-protect (progn
-                          (setq buffer-read-only nil)
-                          (popup-tip str :margin t))
-          (setq buffer-read-only t))
-      (popup-tip str :margin t))))
+     (text-translator-display-function
+      (funcall text-translator-display-function))
+     (t
+      (text-translator-window-display))))))
 
 (defun text-translator-update-hashtable ()
   (let ((hash (make-hash-table :test 'equal)))
@@ -358,6 +342,80 @@ specified site, and receives translation result."
           text-translator-site-data-alist)
     hash))
 
+(defun text-translator-proc-clear ()
+  (let (proc)
+    (when text-translator-processes-alist
+      (dolist (i text-translator-processes-alist)
+        (setq proc (get-process (nth 0 i)))
+        (when (processp proc)
+          (delete-process proc))))))
+
+(defun text-translator-proc-header-get (proc-name &optional alist)
+  (cdr (assoc proc-name (or alist text-translator-processes-alist))))
+
+(defun text-translator-proc-header-set (proc-name value &optional alist)
+  (when (assoc proc-name (or alist text-translator-processes-alist))
+    (setcdr (assoc proc-name (or alist text-translator-processes-alist))
+            value)))
+
+(defun text-translator-proc-header-parse (proc buf-name
+                                               &optional not-delete-header)
+  (with-current-buffer (get-buffer buf-name)
+    (goto-char (point-min))
+    (when (re-search-forward "^\\([\n\r]\\([0-9a-eA-E]+\\)?\\([\n\r]\\)?\\)"
+                             nil t)
+      (let ((header (buffer-substring (point-min) (match-beginning 1)))
+            chunk-len (match-string 2))
+        (when not-delete-header
+          (delete-region (point-min) (match-end 0)))
+        (text-translator-proc-header-set
+         (process-name proc)
+         (let (lis)
+           (dolist (i (split-string header "\n" t))
+             (setq lis (cons (split-string i ": ") lis)))
+           (nreverse lis)))
+        chunk-len))))
+
+(defun text-translator-proc-chunk-get (buf-name &optional not-delete-header)
+  (with-current-buffer (get-buffer buf-name)
+    (goto-char (point-max))
+    (cond
+     ((re-search-backward "\\([\n\r]\\([0-9abcde]+\\)[\n\r]\\)" nil t)
+      (let                (chunk-len (match-string 2))
+        (when not-delete-header
+          (delete-region (match-beginning 0) (match-end 0)))
+        chunk-len))
+     (t
+      ;; Dispite Transfer-Encoding is chunked, size did not exist.
+      ;; Wait the chunk coming.
+      ))))
+
+(defun text-translator-timeout-start ()
+  (or text-translator-timeout
+      (setq text-translator-timeout
+            (run-with-timer text-translator-timeout-interval
+                            text-translator-timeout-interval
+                            'text-translator-timeout))))
+
+(defun text-translator-timeout ()
+  (condition-case err
+      (progn
+        (text-translator-proc-clear)
+        (text-translator-timeout-stop)
+        ;; Insert a timeout message.
+        (dolist (i text-translator-all-results)
+          (when (null (cdr i))
+            (setcdr i "TRANSLATION: TIMEOUT")))
+        ;; Displaying translated string.
+        (text-translator-display (> text-translator-all-site-number 1)))
+    (error (message "Error: %S: text-translator-timeout." err))))
+
+(defun text-translator-timeout-stop ()
+  (when text-translator-timeout
+    (cancel-timer text-translator-timeout)
+    (setq text-translator-timeout nil)))
+
+
 (defun text-translator-replace-string (str replace)
   "Function that converts character string specified for argument STR
 according to rule REPLACE."
@@ -368,7 +426,6 @@ according to rule REPLACE."
     (buffer-string)))
 
 (defun text-translator-extract-tag-exclusion-string (regex &optional dont-convert-br)
-;;  (when (re-search-backward regex nil t)
   (when (re-search-backward regex nil t)
     ;; first: convert <br> tag to '\n' (when variable dont-convert-br is nil)
     ;; second: convert any another tags to empty string.
@@ -382,99 +439,6 @@ according to rule REPLACE."
                       matchstr
                     (replace-regexp-in-string
                      "<[bB][rR]\\( /\\)?>" "\n" matchstr))))))
-
-;;;; major-mode text-translator-mode
-
-;; variables for major mode
-(defvar text-translator-mode nil)
-(defvar text-translator-mode-map nil)
-(defvar text-translator-mode-pkey-map nil)
-(defvar text-translator-mode-syntax-table nil)
-(defvar text-translator-mode-abbrev-table nil)
-(define-abbrev-table 'text-translator-mode-abbrev-table ())
-
-;; keymap definition
-(unless text-translator-mode-map
-  (setq text-translator-mode-map (make-sparse-keymap))
-  (define-prefix-command 'text-translator-mode-pkey-map)
-  (let ((map text-translator-mode-pkey-map))
-    (define-key map "\C-q" 'text-translator-quit)
-    (define-key map "\C-a" 'text-translator-translate-recent-type)
-    (define-key map "\C-l" 'text-translator-display-last-string)
-    (define-key map "\C-d" 'text-translator-translate-default)
-    (define-key map "\C-s" 'text-translator-toggle-leave-string)))
-
-;; major-mode
-(defun text-translator-mode ()
-  "Major mode for text-translator."
-  (kill-all-local-variables)
-  (setq local-abbrev-table text-translator-mode-abbrev-table)
-  (set-syntax-table text-translator-mode-syntax-table)
-  (setq mode-name text-translator-mode-name)
-  (setq major-mode 'text-translator-mode)
-  (define-key text-translator-mode-map
-    text-translator-prefix-key text-translator-mode-pkey-map)
-  (use-local-map text-translator-mode-map)
-  (run-hooks 'text-translator-mode-hook))
-
-;; syntax-table
-(unless text-translator-mode-syntax-table
-  (setq text-translator-mode-syntax-table (make-syntax-table)))
-
-;; functions for major-mode
-(defun text-translator-quit ()
-  "Function that closes buffer for text-translator.
-If window only have *translated* buffer, change another buffer."
-  (interactive)
-  (bury-buffer)
-  (unless (one-window-p)
-    (delete-window)))
-
-(defun text-translator-toggle-leave-string ()
-  "Function that change value of `text-translator-leave-string'.
-Toggle to display a translation result buffer of character
-string that used last time."
-  (interactive)
-  (setq text-translator-leave-string (not text-translator-leave-string))
-  (message "Pretranslational string switched %s to leave."
-           (if text-translator-leave-string "" " not")))
-
-(defun text-translator-display-last-string (arg)
-  "Function that displays translated character string last time.
-Default display to minibuffer.
-With prefix-arg, insert buffer."
-  (interactive "P")
-  (if arg
-      (insert text-translator-last-string)
-    (message "%s" text-translator-last-string)))
-
-(defun text-translator-translate-recent-type ()
-  "Function that translates by type corresponding to the language
-that used last time.
-For example, last time, if you have used excite.co.jp_enja,
-this time select from **_enja, and, translates."
-  (interactive)
-  (let* ((minibuffer-history text-translator-engine-history)
-         (engine (car text-translator-engine-history))
-         (last-type
-          (concat "_" (text-translator-get-engine-type-or-site engine)))
-         (type (completing-read
-                (format "Select translation engine (last %s): " engine)
-                (delq nil
-                      (mapcar
-                       (lambda (x)
-                         (when (string-match last-type (car x))
-                           x))
-                       text-translator-site-data-alist))
-                nil t)))
-    (unless (string= "" type)
-      (text-translator-client type text-translator-last-string))))
-
-(defun text-translator-translate-default ()
-  "Function that translates by default type only.
-Default is value of `text-translator-default-engine'."
-  (interactive)
-  (text-translator nil nil text-translator-default-engine))
 
 (defun text-translator-check-valid-translation-engine (engine valid-engine)
   "Check ENGINE that is registered in `text-translator-site-data-alist'.
