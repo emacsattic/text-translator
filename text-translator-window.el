@@ -27,6 +27,7 @@
 
 (require 'text-translator)
 
+
 ;; Functions:
 
 (defun text-translator-window-display ()

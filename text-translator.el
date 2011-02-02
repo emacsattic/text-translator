@@ -30,8 +30,7 @@
 ;;; Code:
 
 (require 'text-translator-vars)
-(require 'text-translator-window)
-;; (require 'text-translator-popup)
+
 
 ;; Todo: Modify a process of `last'.
 (defun text-translator (arg &optional last engine-or-func)
@@ -246,7 +245,7 @@ specified site, and receives translation result."
            "\r\n"
            post-str "\r\n"))
         "\r\n"))
-      ;; Display only once (Countermesure for te).
+      ;; Display only once (Countermesure for text-translator-all).
       (when (= 1 (length text-translator-processes-alist))
         (message "Translating..."))
       ;; Todo: Add a process of when `sync' was t.

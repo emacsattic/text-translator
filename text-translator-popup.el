@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'popup)
+(require 'text-translator-vars)
 
 
 ;; Functions:

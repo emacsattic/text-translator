@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'pos-tip)
+(require 'text-translator-vars)
 
 
 ;; Functions:

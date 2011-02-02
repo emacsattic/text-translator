@@ -13,13 +13,20 @@ prefix			=	/usr/local
 LISPDIR			=	$(prefix)/share/emacs/site-lisp
 INSTALLDIR		=	$(LISPDIR)/$(PACKAGE)
 
-EL				=	text-translator.el text-translator-vars.el
+EL			=	text-translator.el         \
+				text-translator-load.el    \
+				text-translator-popup.el   \
+				text-translator-pos-tip.el \
+				text-translator-sites.el   \
+				text-translator-vars.el    \
+				text-translator-window.el
+
 EL_NOT_COMPILE	=	text-translator-load.el
 ELC				=	$(EL:.el=.elc)
 
 DISTDIR			=	$(PACKAGE)-$(VERSION)
 TARBALL			=	$(PACKAGE)-$(VERSION).tar.gz
-FILES			=	Makefile README.en README.ja ChangeLog ChangeLog.old $(EL) $(EL_NOT_COMPILE)
+FILES			=	Makefile README.en README.ja $(EL) $(EL_NOT_COMPILE)
 
 BATCH_FLAGS		=	-batch -q -no-site-file
 
