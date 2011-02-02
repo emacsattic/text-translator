@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-(require 'text-translator)
+(require 'text-translator-vars)
 
 
 ;; Functions:

@@ -30,6 +30,7 @@
 ;;; Code:
 
 (require 'text-translator-vars)
+(require 'text-translator-window)
 
 
 ;; Todo: Modify a process of `last'.
