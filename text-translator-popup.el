@@ -29,6 +29,16 @@
 (require 'text-translator-vars)
 
 
+;; Variables:
+
+(defvar text-translator-popup-keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map "\C-p" 'popup-scroll-up)
+    (define-key map "\C-n" 'popup-scroll-down)
+    map)
+  "*")
+
+
 ;; Functions:
 
 (defun text-translator-popup-display ()
@@ -52,18 +62,13 @@
             :margin t
             :nowait t
             :scroll-bar t))
-          ;; keymap: Should I define as a external global variable?
-          (keymap (let ((map (make-sparse-keymap)))
-                    (define-key map "\C-p" 'popup-scroll-up)
-                    (define-key map "\C-n" 'popup-scroll-down)
-                    map))
           (loop t)
           key binding command)
       (unwind-protect
           (progn
             (while loop
               (setq key (read-key-sequence-vector "")
-                    binding (lookup-key keymap key))
+                    binding (lookup-key text-translator-popup-keymap key))
               (cond
                ((eq binding 'popup-scroll-up)
                 (popup-scroll-up tip))

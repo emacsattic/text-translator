@@ -29,6 +29,18 @@
 (require 'text-translator-vars)
 
 
+;; Variables:
+
+(defvar text-translator-pos-tip-timeout 0
+  "*")
+
+(defvar text-translator-pos-tip-tip-color nil
+  "*")
+
+(defvar text-translator-pos-tip-separator-face 'font-lock-keyword-face
+  "*")
+
+
 ;; Functions:
 
 (defun text-translator-pos-tip-display ()
@@ -36,19 +48,29 @@
   (message "Translating...done")
   (cond
    ((= 1 text-translator-all-site-number)
-    (pos-tip-show (cdar text-translator-all-results)
-                  nil nil nil 0))
+    (text-translator-pos-tip-show (cdar text-translator-all-results)))
    (t
-    (pos-tip-show (mapconcat
-                #'(lambda (x)
-                    (let ((engine  (substring (car x)
-                                              (length text-translator-buffer)))
-                          (str     (cdr x)))
-                      (concat "----- " engine " -----" "\n\n" str "\n")))
-                (sort text-translator-all-results
-                      #'(lambda (x y) (string< (car x) (car y))))
-                "\n")
-                  nil nil nil 0))))
+    (text-translator-pos-tip-show
+     (mapconcat
+      #'(lambda (x)
+          (let ((engine  (substring (car x)
+                                    (length text-translator-buffer)))
+                (str     (cdr x)))
+            (concat (propertize (concat "----- " engine " -----")
+                                'face text-translator-pos-tip-separator-face)
+                    "\n\n" str "\n")))
+      (sort text-translator-all-results
+            #'(lambda (x y) (string< (car x) (car y))))
+      "\n")))))
+
+(defun text-translator-pos-tip-show (msg)
+  (pos-tip-show-no-propertize
+   msg
+   text-translator-pos-tip-tip-color
+   nil
+   nil
+   text-translator-pos-tip-timeout))
+
 
 (provide 'text-translator-pos-tip)
 
