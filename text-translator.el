@@ -200,7 +200,9 @@ specified site, and receives translation result."
          (process-connection-type nil)
          (enc-str (text-translator-url-encode-string str (nth 4 type)))
          (post-str (if (nth 3 type) (format (nth 3 type) enc-str) nil))
-         (truncate-partial-width-windows nil))
+         (truncate-partial-width-windows nil)
+         (text-translator-display-function
+          (if sync 'ignore text-translator-display-function)))
     ;; Initalize temporary variables
     (setq text-translator-all-before-string
           (cons '((process-name proc) engine str)
@@ -249,8 +251,11 @@ specified site, and receives translation result."
       ;; Display only once (Countermesure for text-translator-all).
       (when (= 1 (length text-translator-processes-alist))
         (message "Translating..."))
-      ;; Todo: Add a process of when `sync' was t.
-      )))
+      ;; If `sync' was `t', Synchronize a output.
+      (when (and sync (not all))
+        (while (not (cdar text-translator-all-results))
+          (sit-for 0.1))
+        (cdar text-translator-all-results)))))
 
 (defun text-translator-client-filter (proc str)
   (let (buf-name buf-bytes content-len chunk-len all parse-method)
