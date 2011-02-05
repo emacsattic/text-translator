@@ -176,6 +176,9 @@ against the translation engines that processes per line."
 (defvar text-translator-engine-history nil
   "The history of translation engine which you used.")
 
+(defvar text-translator-all-history nil
+  "")
+
 (defvar text-translator-display-function nil
   "*")
 

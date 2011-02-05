@@ -205,7 +205,7 @@ specified site, and receives translation result."
           (if sync 'ignore text-translator-display-function)))
     ;; Initalize temporary variables
     (setq text-translator-all-before-string
-          (cons '((process-name proc) engine str)
+          (cons (list (process-name proc) engine str)
                 text-translator-all-before-string)
           text-translator-processes-alist
           (cons (cons (process-name proc) nil)
@@ -309,8 +309,6 @@ specified site, and receives translation result."
       (when text-translator-all-results
         (when (assoc (process-name proc) text-translator-all-results)
           (setcdr (assoc (process-name proc) text-translator-all-results) str))
-        ;; Todo: To add a adding history routine that use a
-        ;; `text-translator-all-before-string'.
         (text-translator-display all)))))
 
 (defun text-translator-display (all)
@@ -318,6 +316,7 @@ specified site, and receives translation result."
    (all
     (when (not (member 'nil (mapcar 'cdr text-translator-all-results)))
       (text-translator-timeout-stop)
+      (text-translator-add-history)
       (cond
        (text-translator-display-function
         (funcall text-translator-display-function))
@@ -325,11 +324,33 @@ specified site, and receives translation result."
         (text-translator-window-display)))))
    (t
     (text-translator-timeout-stop)
+    (text-translator-add-history)
     (cond
      (text-translator-display-function
       (funcall text-translator-display-function))
      (t
       (text-translator-window-display))))))
+
+(defun text-translator-add-history ()
+  (let ((make-history
+         #'(lambda ()
+             (mapcar
+              #'(lambda (i)
+                  (let ((pname (car i)) (tstring (cdr i)) match)
+                    ;; match is '(engine before-string).
+                    (when (setq match
+                                (assoc pname
+                                       text-translator-all-before-string))
+                      (when (cdr match)
+                        (nreverse (cons tstring
+                                        (nreverse (cdr match))))))))
+              text-translator-all-results))))
+    (cond
+     (text-translator-all-history
+      (add-to-history 'text-translator-all-history (funcall make-history)))
+     (t
+      (setq text-translator-all-history
+            (cons (funcall make-history) text-translator-all-history))))))
 
 (defun text-translator-update-hashtable ()
   (let ((hash (make-hash-table :test 'equal)))
