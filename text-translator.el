@@ -56,19 +56,22 @@ Use Excite, Google and so translation site.
    (If `text-translator-engine-history' is nil,
     use `text-translator-default-engine'.)"
   (interactive "P")
-  ;; Todo: Deleted variable.
-  (add-to-list 'text-translator-engine-history text-translator-default-engine)
-  (let ((minibuffer-history text-translator-engine-history)
-        (engine (text-translator-check-valid-translation-engine
+  (let ((engine (text-translator-check-valid-translation-engine
                  engine-or-func
-                 ;; Todo: Deleted variable
-                 (car text-translator-engine-history)))
+                 text-translator-default-engine))
         str)
     ;; If prefix-arg is non-nil, change translation type.
     (when (or arg last)
-      (setq engine (completing-read
-                    (format "Select translation engine (default %s): " engine)
-                    text-translator-site-data-alist nil t nil nil engine)))
+      (let ((minibuffer-history
+             (let (engines)
+               (dolist (i text-translator-all-history)
+                 (dolist (j i)
+                   (setq engines (cons (nth 0 j) engines))))
+               (nreverse engines))))
+        (setq engine (completing-read
+                      (format "Select translation engine (default %s): "
+                              engine)
+                      text-translator-site-data-alist nil t nil nil engine))))
     ;; Initialize (init global variable, delete running processess etc...).
     (text-translator-proc-clear)
     (setq str
@@ -125,7 +128,11 @@ I choose with the character string that I translated in the last time."
    (mark-active
     (buffer-substring-no-properties (region-beginning) (region-end)))
    (t
-    (read-string (or prompt "Enter string: ")))))
+    (let ((minibuffer-history
+           (mapcar #'(lambda (x)
+                       (nth 1 (car x)))
+                   text-translator-all-history)))
+      (read-string (or prompt "Enter string: "))))))
 
 (defun text-translator-all (arg &optional key str)
   "The function to translate in all of translate sites that matches
@@ -177,7 +184,7 @@ specified site, and receives translation result."
                (cond
                 ((not text-translator-do-fill-region)
                  text-translator-pre-string-replace-alist)
-                ;; for example, if engine is "excite.co.jp_enja",
+                ;; For example, if engine is "excite.co.jp_enja",
                 ;; this code returns "en".
                 ((member (substring
                           (text-translator-get-engine-type-or-site engine) 0 2)

@@ -168,9 +168,13 @@ that used last time.
 For example, last time, if you have used excite.co.jp_enja,
 this time select from **_enja, and, translates."
   (interactive)
-  ;; Todo: Deleted variable
-  (let* ((minibuffer-history text-translator-engine-history)
-         (engine (car text-translator-engine-history))
+  (let* ((minibuffer-history
+          (let (engines)
+            (dolist (i text-translator-all-history)
+              (dolist (j i)
+                (setq engines (cons (nth 0 j) engines))))
+            (nreverse engines)))
+         (engine (nth 0 (caar text-translator-all-history)))
          (last-type
           (concat "_" (text-translator-get-engine-type-or-site engine)))
          (type (completing-read
