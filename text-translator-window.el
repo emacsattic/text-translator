@@ -158,9 +158,10 @@ string that used last time."
 Default display to minibuffer.
 With prefix-arg, insert buffer."
   (interactive "P")
-  (if arg
-      (insert text-translator-last-string)
-    (message "%s" text-translator-last-string)))
+  (let ((last-str (nth 1 (caar text-translator-all-history))))
+    (if arg
+        (insert last-str)
+      (message "%s" last-str))))
 
 (defun text-translator-translate-recent-type ()
   "Function that translates by type corresponding to the language
@@ -188,7 +189,7 @@ this time select from **_enja, and, translates."
                 nil t)))
     (unless (string= "" type)
       ;; Todo: Deleted variable.
-      (text-translator-client type text-translator-last-string))))
+      (text-translator-client type (nth 1 (caar text-translator-all-history))))))
 
 (defun text-translator-translate-default ()
   "Function that translates by default type only.

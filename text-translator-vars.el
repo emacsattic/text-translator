@@ -170,12 +170,6 @@ against the translation engines that processes per line."
   :type '(repeat (string :tag "language(2char)"))
   :group 'text-translator)
 
-(defvar text-translator-last-string ""
-  "The last time, character string which was thrown to the translation site.")
-
-(defvar text-translator-engine-history nil
-  "The history of translation engine which you used.")
-
 (defvar text-translator-all-history nil
   "")
 

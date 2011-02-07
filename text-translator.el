@@ -33,7 +33,6 @@
 (require 'text-translator-window)
 
 
-;; Todo: Modify a process of `last'.
 (defun text-translator (arg &optional last engine-or-func)
   "The function which does text translation.
 Use Excite, Google and so translation site.
@@ -77,8 +76,7 @@ Use Excite, Google and so translation site.
     (setq str
           (cond
            (last
-            ;; Todo: Delete this process (`last').
-            text-translator-last-string)
+            (nth 1 (caar text-translator-all-history)))
            (t
             (text-translator-region-or-read-string
              (format "Enter string translated by %s: " engine))))
@@ -86,7 +84,6 @@ Use Excite, Google and so translation site.
           text-translator-all-results       nil
           text-translator-processes-alist   nil
           text-translator-all-before-string nil)
-    (add-to-history 'text-translator-engine-history engine)
     (text-translator-client
      (text-translator-check-valid-translation-engine
       (and (functionp engine-or-func) (funcall engine-or-func engine str))
