@@ -21,7 +21,8 @@ EL			=	text-translator.el         \
 				text-translator-vars.el    \
 				text-translator-window.el
 
-EL_NOT_COMPILE	=	text-translator-load.el
+EL_NOT_COMPILE	=	text-translator-load.el \
+			text-translator-test.el
 ELC				=	$(EL:.el=.elc)
 
 DISTDIR			=	$(PACKAGE)-$(VERSION)
@@ -66,6 +67,12 @@ patch :
 			$(RM) $$patch ; \
 		fi \
 	done
+
+test :
+	$(EMACS) $(BATCH_FLAGS)                               \
+		-eval '(setq load-path (cons "." load-path))' \
+		-l text-translator-test                       \
+		-eval '(text-translator-test)' 2> /dev/null
 
 %.elc: %.el
 	$(EMACS) $(BATCH_FLAGS) \

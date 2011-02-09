@@ -253,7 +253,8 @@ specified site, and receives translation result."
            post-str "\r\n"))
         "\r\n"))
       ;; Display only once (Countermesure for text-translator-all).
-      (when (= 1 (length text-translator-processes-alist))
+      (when (and (not sync)
+                 (= 1 (length text-translator-processes-alist)))
         (message "Translating..."))
       ;; If `sync' was `t', Synchronize a output.
       (when (and sync (not all))
