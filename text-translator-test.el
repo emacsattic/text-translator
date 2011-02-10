@@ -185,8 +185,8 @@
 (defun text-translator-test ()
   (interactive)
   (and
-   ;; (text-translator-test-google.com)
-   ;; (text-translator-test-yahoo.com)
+   (text-translator-test-google.com)
+   (text-translator-test-yahoo.com)
    (text-translator-test-freetranslation.com)))
 
 
