@@ -376,12 +376,15 @@ specified site, and receives translation result."
     hash))
 
 (defun text-translator-proc-clear ()
-  (let (proc)
+  (let (proc buf)
     (when text-translator-processes-alist
       (dolist (i text-translator-processes-alist)
-        (setq proc (get-process (nth 0 i)))
+        (setq proc (get-process (nth 0 i))
+              buf  (get-buffer  (nth 0 i)))
         (when (processp proc)
-          (delete-process proc))))))
+          (delete-process proc))
+        (when (bufferp buf)
+          (kill-buffer buf))))))
 
 (defun text-translator-proc-header-get (proc-name &optional alist)
   (cdr (assoc proc-name (or alist text-translator-processes-alist))))
@@ -424,11 +427,12 @@ specified site, and receives translation result."
       ))))
 
 (defun text-translator-timeout-start ()
-  (or text-translator-timeout
-      (setq text-translator-timeout
-            (run-with-timer text-translator-timeout-interval
-                            text-translator-timeout-interval
-                            'text-translator-timeout))))
+  (when text-translator-timeout-interval
+    (or text-translator-timeout
+        (setq text-translator-timeout
+              (run-with-timer text-translator-timeout-interval
+                              text-translator-timeout-interval
+                              'text-translator-timeout)))))
 
 (defun text-translator-timeout ()
   (condition-case err

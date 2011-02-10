@@ -31,33 +31,37 @@
 
 ;; Variables:
 
+(defvar text-translator-test-display-OK nil
+  "*")
+
 (defvar text-translator-test-google.com
-  '("google.com" . (("en" "ja" "Japan" "日本")
-                    ("ja" "en" "日本" "Japan")
-                    ("en" "es" "Japan" "Japón")
-                    ("es" "en" "Japón" "Japan")
-                    ("en" "fr" "Japan" "Le Japon")
-                    ("fr" "en" "Le Japon" "Japan")
-                    ("en" "de" "English" "Englisch")
-                    ("de" "en" "Englisch" "English")
-                    ("en" "it" "English" "Inglese")
-                    ("it" "en" "Inglese" "English")
-                    ("en" "ar" "Japan" "اليابان")
-                    ("ar" "en" "اللغة الإنجليزية" "English")
-                    ("de" "fr" "Englisch" "En anglais")
-                    ("fr" "de" "En anglais" "Englisch")
-                    ("en" "pt" "Japan" "Japão")
-                    ("pt" "en" "Japão" "Japan")
-                    ("en" "ru" "Japan" "Япония")
-                    ("ru" "en" "Япония" "Japan")
-                    ("en" "ko" "Japan" "일본")
-                    ("ko" "en" "일본" "Japan")
-                    ("en" "ch" "Hello, World" "你好，世界")
-                    ("ch" "en" "你好，世界" "Hello, world")
-                    ("en" "tw" "China" "中國")
-                    ("tw" "en" "中國" "China")
-                    ("ch" "tw" "中国" "中國")
-                    ("tw" "ch" "中國" "中国")))
+  '("google.com" .
+    (("en" "ja" "Japan" "日本")
+     ("ja" "en" "日本" "Japan")
+     ("en" "es" "Japan" "Japón")
+     ("es" "en" "Japón" "Japan")
+     ("en" "fr" "Japan" "Le Japon")
+     ("fr" "en" "Le Japon" "Japan")
+     ("en" "de" "English" "Englisch")
+     ("de" "en" "Englisch" "English")
+     ("en" "it" "English" "Inglese")
+     ("it" "en" "Inglese" "English")
+     ("en" "ar" "Japan" "اليابان")
+     ("ar" "en" "اللغة الإنجليزية" "English")
+     ("de" "fr" "Englisch" "En anglais")
+     ("fr" "de" "En anglais" "Englisch")
+     ("en" "pt" "Japan" "Japão")
+     ("pt" "en" "Japão" "Japan")
+     ("en" "ru" "Japan" "Япония")
+     ("ru" "en" "Япония" "Japan")
+     ("en" "ko" "Japan" "일본")
+     ("ko" "en" "일본" "Japan")
+     ("en" "ch" "Hello, World" "你好，世界")
+     ("ch" "en" "你好，世界" "Hello, world")
+     ("en" "tw" "China" "中國")
+     ("tw" "en" "中國" "China")
+     ("ch" "tw" "中国" "中國")
+     ("tw" "ch" "中國" "中国")))
   "")
 
 (defvar text-translator-test-yahoo.com
@@ -96,11 +100,34 @@
      ("ch" "en" "你好，世界" "You are good, world")))
   "")
 
+(defvar text-translator-test-freetranslation.com
+  '("freetranslation.com" .
+    (("en" "es" "Japan" "Japón")
+     ("es" "en" "Japón" "Japan")
+     ("en" "fr" "Japan" "Le Japon")
+     ("fr" "en" "Le Japon" "Japan")
+     ("en" "de" "English" "Englisch")
+     ("de" "en" "Englisch" "English")
+     ("en" "it" "English" "Inglesi")
+     ("it" "en" "Inglesi" "English")
+     ("en" "nl" "English" "Engels")
+     ("nl" "en" "Engels" "Angels")
+     ("en" "pt" "Japan" "Japão")
+     ("pt" "en" "Japão" "Japan")
+     ("en" "no" "English" "Engelsk")
+     ("en" "ru" "English" "Английский язык")
+     ("ru" "en" "Английский язык" "English language")
+     ("en" "ch" "English" "英语")
+     ("en" "tw" "English" "英語")
+     ("en" "ja" "English" "英語")
+     ("ja" "en" "英語" "English   ")))
+  "")
+
 
 ;; Functions:
 
 (defun text-translator-test-internal (site data &optional wait)
-  (let (engine before after translated status)
+  (let (engine before after translated status errors successes)
     (dolist (i data)
       (setq text-translator-all-site-number   1
             text-translator-all-results       nil
@@ -116,28 +143,51 @@
                       (prog1 (text-translator-client engine before nil t)
                         (text-translator-timeout-start)))
                 after))
-          (princ (format "NG: %s: %s != %s\n" engine after translated)))
+          (princ (format "NG: %s: '%s' != '%s'\n" engine after translated))
+          (setq errors (cons (cons (nth 0 i) (nth 1 i)) errors)))
          (t
-          (princ (format "OK: %s: %s == %s\n" engine after translated))
+          (when text-translator-test-display-OK
+            (princ (format "OK: %s: %s == %s\n" engine after translated)))
+          (setq successes (cons (cons (nth 0 i) (nth 1 i)) successes))
           (setq status t))))
       (when (and wait (numberp wait))
         (sit-for wait)))
+    (when errors
+      (princ (format ";; > FAILED: %s\n" engine))
+      (dolist (i errors)
+        (princ (format ";;     %s%s\n" (car i) (cdr i))))
+      (princ "\n"))
+    (when successes
+      (princ (format ";; > PASSED: %s\n" engine))
+      (dolist (i successes)
+        (princ (format ";;     %s%s\n" (car i) (cdr i))))
+      (princ "\n"))
     status))
 
 (defun text-translator-test-google.com ()
   (let ((site-val text-translator-test-google.com))
     (princ (format ";; %s\n" (car site-val)))
-  (text-translator-test-internal (car site-val) (cdr site-val))))
+    (text-translator-test-internal (car site-val) (cdr site-val))))
 
 (defun text-translator-test-yahoo.com ()
-  (let ((site-val text-translator-test-yahoo.com))
+  (let ((site-val text-translator-test-yahoo.com)
+        (text-translator-timeout-interval 5))
     (princ (format ";; %s\n" (car site-val)))
-  (text-translator-test-internal (car site-val) (cdr site-val))))
+    (text-translator-test-internal (car site-val) (cdr site-val))))
+
+(defun text-translator-test-freetranslation.com ()
+  (let ((site-val text-translator-test-freetranslation.com)
+        (text-translator-timeout-interval nil)
+        (sleep-wait 2))
+    (princ (format ";; %s\n" (car site-val)))
+    (text-translator-test-internal (car site-val) (cdr site-val) sleep-wait)))
 
 (defun text-translator-test ()
   (interactive)
-  (and (text-translator-test-google.com)
-       (text-translator-test-yahoo.com)))
+  (and
+   ;; (text-translator-test-google.com)
+   ;; (text-translator-test-yahoo.com)
+   (text-translator-test-freetranslation.com)))
 
 
 (provide 'text-translator-test)
