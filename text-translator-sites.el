@@ -145,16 +145,16 @@
      "gen_text=%s&charset=gb2312&cjjc=%o%t"
      utf-8
      "<TEXTAREA class=\"out-form\" name=\"gen_text2\" cols=\"25\" rows=\"15\">\\([^<]*\\)</TEXTAREA>"
-     (("c" . "j") ("j" . "c") ("e" . "c"))
-     (("c" . "ch") ("j" . "ja") ("e" . "en")))
+     (("c" . "j") ("j" . "c"))
+     (("c" . "ch") ("j" . "ja")))
     ("fresheye.com"
      "mt.fresheye.com"
      "/ft_cjresult.cgi HTTP/1.1"
      "gen_text=%s&charset=big5&cjjc=%o%t"
      utf-8
      "<TEXTAREA class=\"out-form\" name=\"gen_text2\" cols=\"25\" rows=\"15\">\\([^<]*\\)</TEXTAREA>"
-     (("c" . "j") ("j" . "c") ("e" . "c"))
-     (("c" . "tw") ("j" . "ja") ("e" . "en")))
+     (("c" . "j") ("j" . "c"))
+     (("c" . "tw") ("j" . "ja")))
 
     ;; Excite.co.jp
     ("excite.co.jp"

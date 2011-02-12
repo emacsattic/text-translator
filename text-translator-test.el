@@ -133,6 +133,16 @@
      ("ch" "ja" "英语" "英語")))
   "")
 
+(defvar text-translator-test-fresheye.com
+  '("fresheye.com" .
+    (("en" "ja" "English" "英語")
+     ("ja" "en" "英語" "English")
+     ("ja" "ch" "英語" "英语")
+     ("ch" "ja" "英语" "英語")
+     ("ja" "tw" "ハローワールド" "哈羅世界")
+     ("tw" "ja" "哈羅世界" "ハロ世界")))
+  "")
+
 
 ;; Functions:
 
@@ -202,6 +212,11 @@
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val))))
 
+(defun text-translator-test-fresheye.com ()
+  (let ((site-val text-translator-test-fresheye.com))
+    (princ (format ";; %s\n" (car site-val)))
+    (text-translator-test-internal (car site-val) (cdr site-val))))
+
 (defun text-translator-test ()
   (interactive)
   ;; 全走査
@@ -209,7 +224,8 @@
     (text-translator-test-google.com)
     (text-translator-test-yahoo.com)
     (text-translator-test-freetranslation.com)
-    (text-translator-test-livedoor.com)))
+    (text-translator-test-livedoor.com)
+    (text-translator-test-fresheye.com)))
 
 
 (provide 'text-translator-test)
