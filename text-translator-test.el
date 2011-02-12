@@ -150,25 +150,29 @@
         (cond
          ((not (string=
                 (setq translated
-                      (prog1 (text-translator-client engine before nil t)
-                        (text-translator-timeout-start)))
+                      (prog2
+                          (text-translator-timeout-start)
+                          (text-translator-client engine before nil t)
+                        (text-translator-timeout-stop)))
                 after))
-          (princ (format "NG: %s: '%s' != '%s'\n" engine after translated))
+          (princ (format "NG: %s: '%s' != '%s'\n"
+                         engine after translated))
           (setq errors (cons (cons (nth 0 i) (nth 1 i)) errors)))
          (t
           (when text-translator-test-display-OK
-            (princ (format "OK: %s: %s == %s\n" engine after translated)))
+            (princ (format "OK: %s: %s == %s\n"
+                           engine after translated)))
           (setq successes (cons (cons (nth 0 i) (nth 1 i)) successes))
           (setq status t))))
       (when (and wait (numberp wait))
         (sit-for wait)))
     (when errors
-      (princ (format ";; > FAILED: %s\n" engine))
+      (princ (format ";; > FAILED: %s\n" site))
       (dolist (i errors)
         (princ (format ";;     %s%s\n" (car i) (cdr i))))
       (princ "\n"))
     (when successes
-      (princ (format ";; > PASSED: %s\n" engine))
+      (princ (format ";; > PASSED: %s\n" site))
       (dolist (i successes)
         (princ (format ";;     %s%s\n" (car i) (cdr i))))
       (princ "\n"))
@@ -181,7 +185,8 @@
 
 (defun text-translator-test-yahoo.com ()
   (let ((site-val text-translator-test-yahoo.com)
-        (text-translator-timeout-interval nil))
+        (text-translator-timeout-interval 5)
+        (sleep-wait 3))
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val))))
 

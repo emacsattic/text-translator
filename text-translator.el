@@ -288,7 +288,9 @@ specified site, and receives translation result."
         (setq chunk-len (text-translator-proc-header-parse proc buf-name)))
        (t
         (when (null content-len)
-          (setq chunk-len (text-translator-proc-chunk-get buf-name)))))
+          (setq chunk-len (text-translator-proc-chunk-get buf-name))
+          (when text-translator-debug
+            (message ";; chunk-len: %s" chunk-len)))))
       ;; Extract a translated string.
       (setq str (text-translator-replace-string
                  (or (cond
@@ -398,11 +400,12 @@ specified site, and receives translation result."
                                                &optional not-delete-header)
   (with-current-buffer (get-buffer buf-name)
     (goto-char (point-min))
-    (when (re-search-forward "^\\([\n\r]\\([0-9a-eA-E]+\\)?\\([\n\r]\\)?\\)"
-                             nil t)
+    (when (re-search-forward
+           "^\\([\n\r]\\([0-9a-fA-F]+\\)?[ \t]*\\([\n\r]\\)?\\)"
+           nil t)
       (let ((header (buffer-substring (point-min) (match-beginning 1)))
-            chunk-len (match-string 2))
-        (when not-delete-header
+            (chunk-len (match-string 2)))
+        (unless not-delete-header
           (delete-region (point-min) (match-end 0)))
         (text-translator-proc-header-set
          (process-name proc)
@@ -410,21 +413,27 @@ specified site, and receives translation result."
            (dolist (i (split-string header "\n" t))
              (setq lis (cons (split-string i ": ") lis)))
            (nreverse lis)))
+        (when text-translator-debug
+          (message ";; text-translator-proc-header-parse: chunk-len %s"
+                   chunk-len))
         chunk-len))))
 
 (defun text-translator-proc-chunk-get (buf-name &optional not-delete-header)
   (with-current-buffer (get-buffer buf-name)
     (goto-char (point-max))
     (cond
-     ((re-search-backward "\\([\n\r]\\([0-9abcde]+\\)[\n\r]\\)" nil t)
-      (let                (chunk-len (match-string 2))
-        (when not-delete-header
+     ((re-search-backward "\\([\n\r]\\([0-9a-f]+\\)[ \t]*[\n\r]\\)" nil t)
+      (let ((chunk-len (match-string 2)))
+        (unless not-delete-header
           (delete-region (match-beginning 0) (match-end 0)))
+        (when text-translator-debug
+          (message ";; text-translator-proc-chunk-get: t"))
         chunk-len))
      (t
       ;; Dispite Transfer-Encoding is chunked, size did not exist.
       ;; Wait the chunk coming.
-      ))))
+      (when text-translator-debug
+        (message ";; text-translator-proc-chunk-get: t"))))))
 
 (defun text-translator-timeout-start ()
   (when text-translator-timeout-interval
@@ -435,17 +444,18 @@ specified site, and receives translation result."
                               'text-translator-timeout)))))
 
 (defun text-translator-timeout ()
-  (condition-case err
-      (progn
-        (text-translator-proc-clear)
-        (text-translator-timeout-stop)
-        ;; Insert a timeout message.
-        (dolist (i text-translator-all-results)
-          (when (null (cdr i))
-            (setcdr i "TRANSLATION: TIMEOUT")))
-        ;; Displaying translated string.
-        (text-translator-display (> text-translator-all-site-number 1)))
-    (error (message "Error: %S: text-translator-timeout." err))))
+  (when text-translator-timeout-interval
+    (condition-case err
+        (progn
+          (text-translator-proc-clear)
+          (text-translator-timeout-stop)
+          ;; Insert a timeout message.
+          (dolist (i text-translator-all-results)
+            (when (null (cdr i))
+              (setcdr i "TRANSLATION: TIMEOUT")))
+          ;; Displaying translated string.
+          (text-translator-display (> text-translator-all-site-number 1)))
+      (error (message "Error: %S: text-translator-timeout." err)))))
 
 (defun text-translator-timeout-stop ()
   (when text-translator-timeout

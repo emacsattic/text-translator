@@ -57,7 +57,7 @@
      "babelfish.yahoo.com"
      "/translate_txt HTTP/1.1"
      "ei=UTF-8&doit=done&intl=1&tt=urltext&trtext=%s&lp=%o_%t&btnTrTxt=Translate"
-     utf-8
+     utf-8-dos
      "    <div id=\"result\"><div style=\"padding:0.6em;\">\\([^<]*\\)</div>"
      (("en" . "ja") ("ja" . "en")
       ("en" . "nl") ("nl" . "en")
