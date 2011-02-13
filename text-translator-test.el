@@ -143,6 +143,18 @@
      ("tw" "ja" "哈羅世界" "ハロ世界")))
   "")
 
+(defvar text-translator-test-excite.co.jp
+  '("excite.co.jp" .
+    (("en" "ja" "English" "英語")
+     ("ja" "en" "英語" "English")
+     ("ja" "ch" "英語" "英语")
+     ("ch" "ja" "英语" "英語")
+     ("ja" "tw" "中国" "中國")
+     ("tw" "ja" "中國" "中国")
+     ("ja" "ko" "英語" "영어 ")
+     ("ko" "ja" "영어" "英語")))
+  "")
+
 
 ;; Functions:
 
@@ -202,7 +214,7 @@
 
 (defun text-translator-test-freetranslation.com ()
   (let ((site-val text-translator-test-freetranslation.com)
-        (text-translator-timeout-interval nil)
+        (text-translator-timeout-interval 3)
         (sleep-wait 2))
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val) sleep-wait)))
@@ -217,6 +229,12 @@
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val))))
 
+(defun text-translator-test-excite.co.jp ()
+  (let ((site-val text-translator-test-excite.co.jp))
+    (princ (format ";; %s\n" (car site-val)))
+    (text-translator-test-internal (car site-val) (cdr site-val))))
+
+
 (defun text-translator-test ()
   (interactive)
   ;; 全走査
@@ -225,7 +243,8 @@
     (text-translator-test-yahoo.com)
     (text-translator-test-freetranslation.com)
     (text-translator-test-livedoor.com)
-    (text-translator-test-fresheye.com)))
+    (text-translator-test-fresheye.com)
+    (text-translator-test-excite.co.jp)))
 
 
 (provide 'text-translator-test)
