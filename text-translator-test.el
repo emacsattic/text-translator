@@ -165,6 +165,16 @@
      ("ko" "ja" "영어" "英語")))
   "")
 
+(defvar text-translator-test-ocn.ne.jp
+  '("ocn.ne.jp" .
+    (("en" "ja" "English" "英語\n")
+     ("ja" "en" "英語" "English")
+     ("ja" "ch" "英語" "英语")
+     ("ch" "ja" "英语" "英語")
+     ("ja" "ko" "英語" "영어 ")
+     ("ko" "ja" "영어" "英語")))
+  "")
+
 
 ;; Functions:
 
@@ -249,6 +259,11 @@
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val))))
 
+(defun text-translator-test-ocn.ne.jp ()
+  (let ((site-val text-translator-test-ocn.ne.jp))
+    (princ (format ";; %s\n" (car site-val)))
+    (text-translator-test-internal (car site-val) (cdr site-val))))
+
 
 (defun text-translator-test ()
   (interactive)
@@ -260,7 +275,8 @@
     (text-translator-test-livedoor.com)
     (text-translator-test-fresheye.com)
     (text-translator-test-excite.co.jp)
-    (text-translator-test-yahoo.co.jp)))
+    (text-translator-test-yahoo.co.jp)
+    (text-translator-test-ocn.ne.jp)))
 
 
 (provide 'text-translator-test)
