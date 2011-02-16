@@ -285,10 +285,12 @@ specified site, and receives translation result."
       ;; Header line or chunk-length
       (cond
        ((null (text-translator-proc-header-get (process-name proc)))
-        (setq chunk-len (text-translator-proc-header-parse proc buf-name)))
+        (setq chunk-len (text-translator-proc-header-parse
+                         proc buf-name text-translator-debug)))
        (t
         (when (null content-len)
-          (setq chunk-len (text-translator-proc-chunk-get buf-name))
+          (setq chunk-len (text-translator-proc-chunk-get
+                           buf-name text-translator-debug))
           (when text-translator-debug
             (message ";; chunk-len: %s" chunk-len)))))
       ;; Extract a translated string.

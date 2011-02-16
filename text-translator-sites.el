@@ -268,13 +268,13 @@ described. To update site-data, evalute `text-translator-site-data-init`."
     ;; traduku.net (Esperanto, English)
     ("traduku.net_eoen"
      "traduku.net"
-     "/cgi-bin/traduku HTTP/1.0"
+     "/cgi-bin/traduku HTTP/1.1"
      "eo_en&t=%s"
      utf-8
      " id=\"rezulto\">\\(\\(.\\|\n\\)*?\\)</div>")
     ("traduku.net_eneo"
      "traduku.net"
-     "/cgi-bin/traduku HTTP/1.0"
+     "/cgi-bin/traduku HTTP/1.1"
      "en_eo_trukilo&t=%s"
      utf-8
      " id=\"rezulto\">\\(\\(.\\|\n\\)*?\\)</div>"))
