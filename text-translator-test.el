@@ -175,11 +175,18 @@
      ("ko" "ja" "영어" "英語")))
   "")
 
+(defvar text-translator-test-tatoeba.org
+  '("tatoeba.org" .
+    (("furigana" "" "日本語" "日本語[にほんご]")
+     ("romaji"   "" "日本語" "nihongo")))
+  "")
+
 (defvar text-translator-test-traduku.net
   '("traduku.net" .
     (("en" "eo" "English" "\nLa angla\n")
      ("eo" "en" "La angla" "\nEnglish\n")))
   "")
+
 
 ;; Functions:
 
@@ -269,6 +276,11 @@
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val))))
 
+(defun text-translator-test-tatoeba.org ()
+  (let ((site-val text-translator-test-tatoeba.org))
+    (princ (format ";; %s\n" (car site-val)))
+    (text-translator-test-internal (car site-val) (cdr site-val))))
+
 (defun text-translator-test-traduku.net ()
   (let ((site-val text-translator-test-traduku.net))
     (princ (format ";; %s\n" (car site-val)))
@@ -286,6 +298,7 @@
     (text-translator-test-excite.co.jp)
     (text-translator-test-yahoo.co.jp)
     (text-translator-test-ocn.ne.jp)
+    (text-translator-test-tatoeba.org)
     (text-translator-test-traduku.net)))
 
 
