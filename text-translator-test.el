@@ -175,6 +175,11 @@
      ("ko" "ja" "영어" "英語")))
   "")
 
+(defvar text-translator-test-lou5.jp
+  '("lou5.jp" .
+    (("*normal" "" "空が青い。" "ホールがブルー。\n\n")))
+  "")
+
 (defvar text-translator-test-tatoeba.org
   '("tatoeba.org" .
     (("furigana" "" "日本語" "日本語[にほんご]")
@@ -276,6 +281,11 @@
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val))))
 
+(defun text-translator-test-lou5.jp ()
+  (let ((site-val text-translator-test-lou5.jp))
+    (princ (format ";; %s\n" (car site-val)))
+    (text-translator-test-internal (car site-val) (cdr site-val))))
+
 (defun text-translator-test-tatoeba.org ()
   (let ((site-val text-translator-test-tatoeba.org))
     (princ (format ";; %s\n" (car site-val)))
@@ -298,6 +308,7 @@
     (text-translator-test-excite.co.jp)
     (text-translator-test-yahoo.co.jp)
     (text-translator-test-ocn.ne.jp)
+    (text-translator-test-lou5.jp)
     (text-translator-test-tatoeba.org)
     (text-translator-test-traduku.net)))
 

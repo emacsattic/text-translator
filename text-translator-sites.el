@@ -243,13 +243,6 @@ described. To update site-data, evalute `text-translator-site-data-init`."
        (text-translator-extract-tag-exclusion-string
         "<p class=\"large align-left box\">\\(\\(.\\|\n\\)*?\\)</p>"
         t)))
-    ;; lou5.jp (Japanese, Lou Blog)
-    ("lou5.jp_*blog"
-     "lou5.jp"
-     "/ HTTP/1.1"
-     "v=2&text=%s"
-     utf-8
-     "<p class=\"large align-left box\">\\(\\(.\\|\n\\)*?\\)</p>")
 
     ;; tatoeba.org (Furigana, romaji)
     ("tatoeba.org_furigana"
