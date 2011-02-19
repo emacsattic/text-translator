@@ -57,7 +57,12 @@ Use Excite, Google and so translation site.
   (interactive "P")
   (let ((engine (text-translator-check-valid-translation-engine
                  engine-or-func
-                 text-translator-default-engine))
+                 (cond
+                  ((and text-translator-all-history
+                        (car text-translator-all-history))
+                   (nth 0 (caar text-translator-all-history)))
+                  (t
+                   text-translator-default-engine))))
         str)
     ;; If prefix-arg is non-nil, change translation type.
     (when (or arg last)
