@@ -32,7 +32,7 @@
 ;; Variables:
 
 (defvar text-translator-test-display-OK nil
-  "*")
+  "*Non-nil means that displays also case of OK.")
 
 (defvar text-translator-test-google.com
   '("google.com" .
@@ -62,7 +62,7 @@
      ("tw" "en" "中國" "China")
      ("ch" "tw" "中国" "中國")
      ("tw" "ch" "中國" "中国")))
-  "")
+  "The test data of google.com.")
 
 (defvar text-translator-test-yahoo.com
   '("yahoo.com" .
@@ -98,7 +98,7 @@
      ("tw" "en" "中國" "China")
      ("en" "ch" "Hello, World" "你好，世界")
      ("ch" "en" "你好，世界" "You are good, world")))
-  "")
+  "The test data of yahoo.com.")
 
 (defvar text-translator-test-freetranslation.com
   '("freetranslation.com" .
@@ -121,7 +121,7 @@
      ("en" "tw" "English" "英語")
      ("en" "ja" "English" "英語")
      ("ja" "en" "英語" "English   ")))
-  "")
+  "The test data of freetranslation.com.")
 
 (defvar text-translator-test-livedoor.com
   '("livedoor.com" .
@@ -131,7 +131,7 @@
      ("ko" "ja" "영어" "英語")
      ("ja" "ch" "英語" "英语")
      ("ch" "ja" "英语" "英語")))
-  "")
+  "The test data of livedoor.com.")
 
 (defvar text-translator-test-fresheye.com
   '("fresheye.com" .
@@ -141,7 +141,7 @@
      ("ch" "ja" "英语" "英語")
      ("ja" "tw" "ハローワールド" "哈羅世界")
      ("tw" "ja" "哈羅世界" "ハロ世界")))
-  "")
+  "The test data of fresheye.com.")
 
 (defvar text-translator-test-excite.co.jp
   '("excite.co.jp" .
@@ -153,7 +153,7 @@
      ("tw" "ja" "中國" "中国")
      ("ja" "ko" "英語" "영어 ")
      ("ko" "ja" "영어" "英語")))
-  "")
+  "The test data of excite.co.jp")
 
 (defvar text-translator-test-yahoo.co.jp
   '("yahoo.co.jp" .
@@ -163,7 +163,7 @@
      ("ch" "ja" "英语" "英語")
      ("ja" "ko" "英語" "영어")
      ("ko" "ja" "영어" "英語")))
-  "")
+  "The test data of yahoo.co.jp.")
 
 (defvar text-translator-test-ocn.ne.jp
   '("ocn.ne.jp" .
@@ -173,24 +173,24 @@
      ("ch" "ja" "英语" "英語")
      ("ja" "ko" "英語" "영어 ")
      ("ko" "ja" "영어" "英語")))
-  "")
+  "The test data of ocn.ne.jp.")
 
 (defvar text-translator-test-lou5.jp
   '("lou5.jp" .
     (("*normal" "" "空が青い。" "ホールがブルー。\n\n")))
-  "")
+  "The test data of lou5.jp.")
 
 (defvar text-translator-test-tatoeba.org
   '("tatoeba.org" .
     (("furigana" "" "日本語" "日本語[にほんご]")
      ("romaji"   "" "日本語" "nihongo")))
-  "")
+  "The test data of tatoeba.org.")
 
 (defvar text-translator-test-traduku.net
   '("traduku.net" .
     (("en" "eo" "English" "\nLa angla\n")
      ("eo" "en" "La angla" "\nEnglish\n")))
-  "")
+  "The test data of toraduku.net.")
 
 
 ;; Functions:
@@ -297,8 +297,8 @@
     (text-translator-test-internal (car site-val) (cdr site-val))))
 
 (defun text-translator-test ()
+  "Test all site data."
   (interactive)
-  ;; 全走査
   (progn
     (text-translator-test-google.com)
     (text-translator-test-yahoo.com)
