@@ -31,8 +31,10 @@
 
 ;; Variables:
 
-(defvar text-translator-test-display-OK nil
-  "*Non-nil means that displays also case of OK.")
+(defcustom text-translator-test-display-OK nil
+  "*Non-nil means that displays also case of OK."
+  :type 'symbol
+  :group 'text-translator)
 
 (defvar text-translator-test-google.com
   '("google.com" .
