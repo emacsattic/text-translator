@@ -36,12 +36,17 @@
     (define-key map "\C-p" 'popup-scroll-up)
     (define-key map "\C-n" 'popup-scroll-down)
     map)
-  "*")
+  "*The keymap for `text-translator-popup-display'.")
 
 
 ;; Functions:
 
 (defun text-translator-popup-display ()
+  "Display a translation result by `popup-tip'.
+If you want to use this function for displaying translation
+result, please add a following code to your .emacs.
+
+\(setq text-translator-display-function 'text-translator-popup-display\)"
   (ding)
   (message "Translating...done")
   (cond
