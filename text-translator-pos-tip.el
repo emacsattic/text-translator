@@ -20,8 +20,6 @@
 ;;; Commentary:
 
 ;; `pos-tip' support for text-translator.el
-;;
-;; Todo: do customizable: face, timeout etc...
 
 ;;; Code:
 
@@ -32,18 +30,25 @@
 ;; Variables:
 
 (defvar text-translator-pos-tip-timeout 0
-  "*")
+  "*The seconds of hiding tooltip automatically.
+The default is 0. It's means not hiding.")
 
 (defvar text-translator-pos-tip-tip-color nil
-  "*")
+  "*The tooltip color.The value is the face or a cons cell like
+\(FOREGROUND-COLOR . BACKGROUND-COLOR\).
+The default is nil.")
 
 (defvar text-translator-pos-tip-separator-face 'font-lock-keyword-face
-  "*")
-
+  "*The separator face of each engine in `text-translator-all'.")
 
 ;; Functions:
 
 (defun text-translator-pos-tip-display ()
+  "Display a translation result by `pos-tip-show'.
+If you want to use this function for displaying translation
+result, please add a following code to your .emacs.
+
+\(setq text-translator-display-function 'text-translator-pos-tip-display\)"
   (ding)
   (message "Translating...done")
   (cond
@@ -64,6 +69,7 @@
       "\n")))))
 
 (defun text-translator-pos-tip-show (msg)
+  "Internal function of `text-translator-pos-tip-display'."
   (pos-tip-show-no-propertize
    msg
    text-translator-pos-tip-tip-color
