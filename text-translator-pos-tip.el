@@ -29,17 +29,24 @@
 
 ;; Variables:
 
-(defvar text-translator-pos-tip-timeout 0
+(defcustom text-translator-pos-tip-timeout 0
   "*The seconds of hiding tooltip automatically.
-The default is 0. It's means not hiding.")
+The default is 0. It's means not hiding."
+  :type  'integer
+  :group 'text-translator)
 
-(defvar text-translator-pos-tip-tip-color nil
+(defcustom text-translator-pos-tip-tip-color nil
   "*The tooltip color.The value is the face or a cons cell like
 \(FOREGROUND-COLOR . BACKGROUND-COLOR\).
-The default is nil.")
+The default is nil."
+  :type  '(cons (string :tag "foreground-color.")
+                (string :tag "background-color."))
+  :group 'text-translator)
 
-(defvar text-translator-pos-tip-separator-face 'font-lock-keyword-face
-  "*The separator face of each engine in `text-translator-all'.")
+(defcustom text-translator-pos-tip-separator-face 'font-lock-keyword-face
+  "*The separator face of each engine in `text-translator-all'."
+  :type  'symbol
+  :group 'text-translator)
 
 ;; Functions:
 
