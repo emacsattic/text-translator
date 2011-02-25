@@ -170,32 +170,52 @@ against the translation engines that processes per line."
   :type '(repeat (string :tag "language(2char)"))
   :group 'text-translator)
 
-(defvar text-translator-all-history nil
-  "")
-
 (defvar text-translator-display-function nil
-  "*")
+  "*The function that shows translation results.
+If this value was `nil', The translation results was showed by
+`text-translator-window-display'.
+The default value is `nil'.")
 
 (defvar text-translator-timeout-interval 3.00
-  "*")
+  "*The translation timeout seconds.")
 
 (defvar text-translator-debug nil
-  "*")
+  "*Non-nil means showing debug messages.")
 
-(defvar text-translator-all-results nil)
+(defvar text-translator-all-history nil
+  "The value has history of all translation.
+This value is list of\(engine before_string after_string\).")
 
-(defvar text-translator-all-site-number nil)
+(defvar text-translator-all-results nil
+  "The internal variable of `text-translator'.
+This value is list of \(buffer_name after_string\).")
 
-(defvar text-translator-all-before-string nil)
+(defvar text-translator-all-site-number nil
+  "The internal variable of `text-translator'.
+This value stores the number of translation.
+This variables was used to distinguish `text-translator-all' and
+`text-translator'.")
 
-(defvar text-translator-processes-alist nil)
+(defvar text-translator-all-before-string nil
+  "The internal variable of `tex-translator'.
+This value is list of \(buffer_name engine before_string
+after_string\).")
 
-(defvar text-translator-sitedata-hash nil)
+(defvar text-translator-processes-alist nil
+  "The internal variable of `text-translator'.
+This values stores detail of the process which worked in last
+translation.")
 
-(defvar text-translator-timeout nil)
+(defvar text-translator-sitedata-hash nil
+  "The internal variable of `text-translator'.
+This value has hash table of translation site data.")
 
+(defvar text-translator-timeout nil
+  "The internal variable of `text-translator'.
+This variable used by the translation process monitoring timer.")
 
 (provide 'text-translator-vars)
+
 ;;; text-translator-vars.el ends here
 
 ;; Local Variables:
