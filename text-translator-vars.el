@@ -170,17 +170,23 @@ against the translation engines that processes per line."
   :type '(repeat (string :tag "language(2char)"))
   :group 'text-translator)
 
-(defvar text-translator-display-function nil
+(defcustom text-translator-display-function nil
   "*The function that shows translation results.
 If this value was `nil', The translation results was showed by
 `text-translator-window-display'.
-The default value is `nil'.")
+The default value is `nil'."
+  :type 'symbol
+  :group 'text-translator)
 
-(defvar text-translator-timeout-interval 3.00
-  "*The translation timeout seconds.")
+(defcustom text-translator-timeout-interval 3.00
+  "*The translation timeout seconds."
+  :type 'integer
+  :group 'text-translator)
 
-(defvar text-translator-debug nil
-  "*Non-nil means showing debug messages.")
+(defcustom text-translator-debug nil
+  "*Non-nil means showing debug messages."
+  :type 'symbol
+  :group 'text-translator)
 
 (defvar text-translator-all-history nil
   "The value has history of all translation.
