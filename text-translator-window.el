@@ -31,6 +31,11 @@
 ;; Functions:
 
 (defun text-translator-window-display ()
+  "Display a translation result by `pop-to-buffer'.
+If you want to use this function for displaying translation
+result, please add a following code to your .emacs.
+
+\(setq text-translator-display-function 'text-translator-window-display\)"
   (let ((buf (get-buffer-create text-translator-buffer))
         (window-min-height
          (if (> text-translator-window-min-height (/ (frame-height) 2))
@@ -89,7 +94,7 @@
       (message "Translating...done"))))
 
 
-;;;; major-mode text-translator-mode
+;;;; major-mode text-translator-window-mode
 
 ;; variables for major mode
 (defvar text-translator-window-mode nil)
@@ -188,7 +193,6 @@ this time select from **_enja, and, translates."
                        text-translator-site-data-alist))
                 nil t)))
     (unless (string= "" type)
-      ;; Todo: Deleted variable.
       (text-translator-client type (nth 1 (caar text-translator-all-history))))))
 
 (defun text-translator-translate-default ()
