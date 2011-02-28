@@ -48,15 +48,21 @@ result, please add a following code to your .emacs.
       (erase-buffer)
       (text-translator-window-mode)
       ;; Todo: Insert a process of when
-      ;; `text-translator-leave-string' is t.
-      ;; (when text-translator-leave-string
-      ;;   (concat (propertize "-----   Original  -----"
-      ;;                       'face font-lock-keyword-face)
-      ;;           "\n\n" original-str "\n"))
-      ;; Todo: Insert a process of when
       ;; `text-translator-do-fill-region' is t.
+      (when text-translator-leave-string
+        (insert (concat (propertize "---- original -----"
+                                    'face font-lock-keyword-face)
+                        "\n\n" (nth 2 (car text-translator-all-before-string))
+                        "\n\n")))
       (cond
        ((= 1 text-translator-all-site-number)
+        (when text-translator-leave-string
+          (insert (concat
+                   (propertize
+                    (format "---- %s -----"
+                            (nth 1 (car text-translator-all-before-string)))
+                    'face font-lock-keyword-face)
+                   "\n\n")))
         (insert (cdar text-translator-all-results))
         (setq engine (substring
                       (caar text-translator-all-results)
