@@ -156,11 +156,8 @@ popup.el URL: http://github.com/m2ym/auto-complete"
   :group 'text-translator)
 
 (defcustom text-translator-do-fill-region nil
-  "*Default is nil. if value is non-nil, it deletes
-linefeed\\(and CR\\) from pre translation string(\"\\n\" -> \" \",
-\"\r\" -> \"\"). and processing to straighten faces with
-fill-paragraph after the translation. it is countermeasure
-against the translation engines that processes per line."
+  "*If this value was non-nil, The all translation texta are done
+`fill-region'. The default value is nil."
   :type 'symbol
   :group 'text-translator)
 

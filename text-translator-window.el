@@ -47,12 +47,12 @@ result, please add a following code to your .emacs.
       (setq buffer-read-only nil)
       (erase-buffer)
       (text-translator-window-mode)
-      ;; Todo: Insert a process of when
-      ;; `text-translator-do-fill-region' is t.
       (when text-translator-leave-string
         (insert (concat (propertize "---- original -----"
                                     'face font-lock-keyword-face)
-                        "\n\n" (nth 2 (car text-translator-all-before-string))
+                        "\n\n"
+                        (text-translator-window-fill-text
+                         (nth 2 (car text-translator-all-before-string)))
                         "\n\n")))
       (cond
        ((= 1 text-translator-all-site-number)
@@ -63,7 +63,8 @@ result, please add a following code to your .emacs.
                             (nth 1 (car text-translator-all-before-string)))
                     'face font-lock-keyword-face)
                    "\n\n")))
-        (insert (cdar text-translator-all-results))
+        (insert (text-translator-window-fill-text
+                 (cdar text-translator-all-results)))
         (setq engine (substring
                       (caar text-translator-all-results)
                       (length text-translator-buffer))))
@@ -76,7 +77,8 @@ result, please add a following code to your .emacs.
                               (str (cdr x)))
                           (concat (propertize (format "----- %s -----" engine)
                                               'face font-lock-keyword-face)
-                                  "\n\n" str "\n")))
+                                  "\n\n" (text-translator-window-fill-text str)
+                                  "\n")))
                     (sort text-translator-all-results
                           #'(lambda (x y) (string< (car x) (car y))))
                     "\n"))
@@ -99,6 +101,17 @@ result, please add a following code to your .emacs.
       (ding)
       (message "Translating...done"))))
 
+(defun text-translator-window-fill-text (text)
+  "Do fill-region for argument `text' when
+`text-translator-do-fill-region' was t."
+  (cond
+   (text-translator-do-fill-region
+    (with-temp-buffer
+      (insert text)
+      (fill-region (point-min) (point-max))
+      (buffer-string)))
+   (t
+    text)))
 
 ;;;; major-mode text-translator-window-mode
 
