@@ -56,8 +56,6 @@ If you want to use this function for displaying translation
 result, please add a following code to your .emacs.
 
 \(setq text-translator-display-function 'text-translator-pos-tip-display\)"
-  (ding)
-  (message "Translating...done")
   (cond
    ((= 1 text-translator-all-site-number)
     (text-translator-pos-tip-show (cdar text-translator-all-results)))

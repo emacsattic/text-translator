@@ -97,9 +97,7 @@ result, please add a following code to your .emacs.
         (when (and text-translator-auto-window-adjust
                    (window-live-p window))
           (balance-windows)
-          (shrink-window-if-larger-than-buffer window)))
-      (ding)
-      (message "Translating...done"))))
+          (shrink-window-if-larger-than-buffer window))))))
 
 (defun text-translator-window-fill-text (text)
   "Do fill-region for argument `text' when

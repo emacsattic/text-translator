@@ -326,6 +326,8 @@ specified site, and receives translation result."
         (text-translator-display all)))))
 
 (defun text-translator-display (all)
+  (ding)
+  (message "Translating...done")
   (cond
    (all
     (when (not (member 'nil (mapcar 'cdr text-translator-all-results)))
