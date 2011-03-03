@@ -131,9 +131,8 @@
   :group 'text-translator)
 
 (defcustom text-translator-user-agent
-;;  "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4"
-  "Mozilla/5.0 (Windows; U; Windows NT 5.0; ja; rv:1.9) Gecko/2008052906 Firefox/3.0"
-  "*text-translator's User Agent. Default is Firefox."
+  (concat "Text-translator-" text-translator-version)
+  "*text-translator's User Agent."
   :type  'string
   :group 'text-translator)
 
