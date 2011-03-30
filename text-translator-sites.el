@@ -33,7 +33,7 @@
      "translate.google.com"
      "/ HTTP/1.1"
      "js=n&prev=_t&hl=ja&ie=UTF-8&text=%s&file=&sl=%o&tl=%t"
-     utf-8-dos
+     japanese-shift-jis
      (lambda ()
        (text-translator-extract-tag-exclusion-string
         "<span id=result_box[^>]*>\\(\\(<span [^>]*>\\([^<]\\|<br>\\)*</span>\\)+\\)</span>"))
@@ -196,7 +196,7 @@
      "/transtext HTTP/1.1"
      "both=TH&text=%s&clearFlg=1&eid=CR-%o%t"
      utf-8
-     "<textarea rows=12 cols=30 name=\"trn_text\" id=\"trn_textText\" class=\"smaller\">\\([^<]*\\)</textarea>"
+     "<textarea rows=12 cols=30 name=\"trn_text\" id=\"trn_textText\" class=\"smaller\"[ 	]*[^>]*>\\([^<]*\\)</textarea>"
      (("E" . "J") ("J" . "E")
       ("C" . "J") ("J" . "C-CN")
       ("K" . "J") ("J" . "K"))

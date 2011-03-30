@@ -232,10 +232,11 @@ specified site, and receives translation result."
         (cond
          (post-str
           ;; use POST method
-          (concat "POST " (nth 2 type) "\r\n"))
+          (concat "POST " (concat "http://" (nth 1 type) (nth 2 type)) "\r\n"))
          (t
           ;; use GET method
-          (concat "GET " (format (nth 2 type) enc-str) "\r\n")))
+          (concat "GET " (format (concat "http://" (nth 1 type) (nth 2 type))
+                                 enc-str) "\r\n")))
         (and text-translator-proxy-server
              text-translator-proxy-user
              text-translator-proxy-password

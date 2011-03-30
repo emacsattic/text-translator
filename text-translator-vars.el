@@ -131,7 +131,7 @@
   :group 'text-translator)
 
 (defcustom text-translator-user-agent
-  (concat "Text-translator-" text-translator-version)
+  (concat "Text-translator/" text-translator-version)
   "*text-translator's User Agent."
   :type  'string
   :group 'text-translator)
