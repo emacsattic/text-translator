@@ -21,9 +21,9 @@ EL			=	text-translator.el         \
 				text-translator-vars.el    \
 				text-translator-window.el
 
-EL_NOT_COMPILE	=	text-translator-load.el \
-			text-translator-test.el
-ELC				=	$(EL:.el=.elc)
+EL_NOT_COMPILE		=	text-translator-load.el \
+				text-translator-test.el
+ELC			=	$(EL:.el=.elc)
 
 DISTDIR			=	$(PACKAGE)-$(VERSION)
 TARBALL			=	$(PACKAGE)-$(VERSION).tar.gz
@@ -46,8 +46,9 @@ clean :
 	-$(RM) $(ELC) *.patch.gz $(PACKAGE)-*.tar.bz2
 
 tarball: Makefile
-	$(MAKE) VERSION=`$(EMACS) $(BATCH_FLAGS) \
-		-l text-translator-vars.el \
+	$(MAKE) VERSION=`$(EMACS) $(BATCH_FLAGS)            \
+		-eval '(add-to-list (quote load-path) ".")' \
+		-l text-translator-vars.el                  \
 		-eval '(princ text-translator-version)' 2> /dev/null` dist
 
 dist : $(FILES)
