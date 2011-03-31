@@ -164,27 +164,6 @@ If window only have *translated* buffer, change another buffer."
   (unless (one-window-p)
     (delete-window)))
 
-;; Todo: Delete this function.
-(defun text-translator-toggle-leave-string ()
-  "Function that change value of `text-translator-leave-string'.
-Toggle to display a translation result buffer of character
-string that used last time."
-  (interactive)
-  (setq text-translator-leave-string (not text-translator-leave-string))
-  (message "Pretranslational string switched %s to leave."
-           (if text-translator-leave-string "" " not")))
-
-;; Todo: Delete this function.
-(defun text-translator-display-last-string (arg)
-  "Function that displays translated character string last time.
-Default display to minibuffer.
-With prefix-arg, insert buffer."
-  (interactive "P")
-  (let ((last-str (nth 1 (caar text-translator-all-history))))
-    (if arg
-        (insert last-str)
-      (message "%s" last-str))))
-
 (defun text-translator-translate-recent-type ()
   "Function that translates by type corresponding to the language
 that used last time.
