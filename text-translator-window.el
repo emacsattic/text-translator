@@ -124,16 +124,9 @@ result, please add a following code to your .emacs.
 ;; keymap definition
 (unless text-translator-window-mode-map
   (define-prefix-command 'text-translator-window-mode-pkey-map)
-  (define-key text-translator-window-mode-pkey-map
-    "\C-q" 'text-translator-window-quit)
-  (define-key text-translator-window-mode-pkey-map
-    "\C-a" 'text-translator-translate-recent-type)
-  (define-key text-translator-window-mode-pkey-map
-    "\C-l" 'text-translator-display-last-string)
-  (define-key text-translator-window-mode-pkey-map
-    "\C-d" 'text-translator-translate-default)
-  (define-key text-translator-window-mode-pkey-map
-    "\C-s" 'text-translator-toggle-leave-string))
+  (setq text-translator-window-mode-map
+        (let ((keymap text-translator-window-mode-pkey-map))
+          (define-key keymap "\C-q" 'text-translator-window-quit))))
 
 ;; major-mode
 (defun text-translator-window-mode ()
@@ -163,39 +156,6 @@ If window only have *translated* buffer, change another buffer."
   (bury-buffer)
   (unless (one-window-p)
     (delete-window)))
-
-(defun text-translator-translate-recent-type ()
-  "Function that translates by type corresponding to the language
-that used last time.
-For example, last time, if you have used excite.co.jp_enja,
-this time select from **_enja, and, translates."
-  (interactive)
-  (let* ((minibuffer-history
-          (let (engines)
-            (dolist (i text-translator-all-history)
-              (dolist (j i)
-                (setq engines (cons (nth 0 j) engines))))
-            (nreverse engines)))
-         (engine (nth 0 (caar text-translator-all-history)))
-         (last-type
-          (concat "_" (text-translator-get-engine-type-or-site engine)))
-         (type (completing-read
-                (format "Select translation engine (last %s): " engine)
-                (delq nil
-                      (mapcar
-                       (lambda (x)
-                         (when (string-match last-type (car x))
-                           x))
-                       text-translator-site-data-alist))
-                nil t)))
-    (unless (string= "" type)
-      (text-translator-client type (nth 1 (caar text-translator-all-history))))))
-
-(defun text-translator-translate-default ()
-  "Function that translates by default type only.
-Default is value of `text-translator-default-engine'."
-  (interactive)
-  (text-translator nil nil text-translator-default-engine))
 
 
 (provide 'text-translator-window)
