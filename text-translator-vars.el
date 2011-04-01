@@ -136,6 +136,26 @@
   :type  'string
   :group 'text-translator)
 
+(defcustom text-translator-accept-encoding "identity"
+  "*The data of Accept-Encoding request header."
+  :type 'string
+  :group 'text-translator)
+
+(defcustom text-translator-accept-charset "Shift_JIS,utf-8;q=0.7,*;q=0.7"
+  "The data of Accept-charset request header."
+  :type 'string
+  :group 'text-translator)
+
+(defcustom text-translator-keep-alive "300"
+  "The data of Keep-alive request header."
+  :type 'stringp
+  :group 'text-translator)
+
+(defcustom text-translator-connection "keep-alive"
+  "The data of connection request header."
+  :type 'stringp
+  :group 'text-translator)
+
 (defcustom text-translator-mode-hook nil
   "*Hook run at the end of function `text-translator-mode'."
   :type 'hook

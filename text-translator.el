@@ -249,10 +249,10 @@ specified site, and receives translation result."
                                     text-translator-proxy-password))))
               "HOST: " (nth 1 type) "\r\n"
               "User-Agent: " text-translator-user-agent "\r\n"
-              "Accept-Encoding: identity\r\n"
-              "Accept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7\r\n"
-              "Keep-Alive: 300" "\r\n"
-              "Connection: keep-alive" "\r\n"
+              "Accept-Encoding: " text-translator-accept-encoding "\r\n"
+              "Accept-Charset: " text-translator-accept-charset "\r\n"
+              "Keep-Alive: " text-translator-keep-alive "\r\n"
+              "Connection: " text-translator-connection "\r\n"
               (when post-str
                 (concat
                  "Content-Type: application/x-www-form-urlencoded\r\n"
