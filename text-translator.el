@@ -282,7 +282,7 @@ specified site, and receives translation result."
   (let (buf-name buf-bytes content-len chunk-len all parse-method)
     (with-current-buffer (process-buffer proc)
       (goto-char (process-mark proc))
-      (insert str)
+      (insert (text-translator-decode-string str (process-name proc)))
       (set-marker (process-mark proc) (point))
       ;; Initialize a variable
       (setq buf-name     (buffer-name)
@@ -482,6 +482,21 @@ specified site, and receives translation result."
     (cancel-timer text-translator-timeout)
     (setq text-translator-timeout nil)))
 
+(defun text-translator-decode-string (str name)
+  (let* ((header (text-translator-proc-header-get name))
+         (content-type (if header (assoc "Content-Type" header)))
+         (http-charset (when (and content-type
+                                  (string-match "charset=\\([^ ]*\\)$"
+                                                (cadr content-type)))
+                         (match-string 1 (cadr content-type))))
+         (charset (when http-charset
+                    (cdr (assoc http-charset
+                                text-translator-charset-alist)))))
+    (cond
+     (charset
+      (decode-coding-string str charset))
+     (t
+      str))))
 
 (defun text-translator-replace-string (str replace)
   "Function that converts character string specified for argument STR

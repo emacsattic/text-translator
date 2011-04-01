@@ -204,6 +204,13 @@ The default value is `nil'."
   :type 'symbol
   :group 'text-translator)
 
+(defvar text-translator-charset-alist
+  '(("Shift_JIS"   . sjis)
+    ("ISO-2022-JP" . iso-2022-7bit)
+    ("EUC-JP"      . euc-jp)
+    ("UTF-8"       . utf-8))
+  "The alist of HTTP charset and emacs charset.")
+
 (defvar text-translator-all-history nil
   "The value has history of all translation.
 This value is list of\(engine before_string after_string\).")
