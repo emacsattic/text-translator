@@ -33,7 +33,7 @@
      "translate.google.com"
      "/ HTTP/1.1"
      "js=n&prev=_t&hl=ja&ie=UTF-8&text=%s&file=&sl=%o&tl=%t"
-     japanese-shift-jis
+     utf-8
      (lambda ()
        (text-translator-extract-tag-exclusion-string
         "<span id=result_box[^>]*>\\(\\(<span [^>]*>\\([^<]\\|<br>\\)*</span>\\)+\\)</span>"))
@@ -189,6 +189,56 @@
      "<textarea name=\"after\" id=\"after\">\\([^<]*\\)</textarea>"
      (("JA" . "KO") ("KO" . "JA"))
      (("JA" . "ja") ("KO" . "ko")))
+    ("excite.co.jp"
+     "www.excite.co.jp"
+     "/world/french/ HTTP/1.1"
+     "wb_lp=%o%t&before=%s"
+     utf-8
+     "<textarea name=\"after\" id=\"after\">\\([^<]*\\)</textarea>"
+     (("JA" . "FR") ("FR" . "JA")
+      ("EN" . "FR") ("FR" . "EN"))
+     (("JA" . "ja") ("FR" . "fr")
+      ("EN" . "en")))
+    ("excite.co.jp"
+     "www.excite.co.jp"
+     "/world/german/ HTTP/1.1"
+     "wb_lp=%o%t&before=%s"
+     utf-8
+     "<textarea name=\"after\" id=\"after\">\\([^<]*\\)</textarea>"
+     (("JA" . "DE") ("DE" . "JA")
+      ("EN" . "DE") ("DE" . "EN"))
+     (("JA" . "ja") ("DE" . "de")
+      ("EN" . "en")))
+    ("excite.co.jp"
+     "www.excite.co.jp"
+     "/world/italian/ HTTP/1.1"
+     "wb_lp=%o%t&before=%s"
+     utf-8
+     "<textarea name=\"after\" id=\"after\">\\([^<]*\\)</textarea>"
+     (("JA" . "IT") ("IT" . "JA")
+      ("EN" . "IT") ("IT" . "EN"))
+     (("JA" . "ja") ("IT" . "it")
+      ("EN" . "en")))
+    ("excite.co.jp"
+     "www.excite.co.jp"
+     "/world/spanish/ HTTP/1.1"
+     "wb_lp=%o%t&before=%s"
+     utf-8
+     "<textarea name=\"after\" id=\"after\">\\([^<]*\\)</textarea>"
+     (("JA" . "ES") ("ES" . "JA")
+      ("EN" . "ES") ("ES" . "EN"))
+     (("JA" . "ja") ("ES" . "es")
+      ("EN" . "en")))
+    ("excite.co.jp"
+     "www.excite.co.jp"
+     "/world/portuguese/ HTTP/1.1"
+     "wb_lp=%o%t&before=%s"
+     utf-8
+     "<textarea name=\"after\" id=\"after\">\\([^<]*\\)</textarea>"
+     (("JA" . "PT") ("PT" . "JA")
+      ("EN" . "PT") ("PT" . "EN"))
+     (("JA" . "ja") ("PT" . "pt")
+      ("EN" . "en")))
 
     ;; Yahoo.co.jp
     ("yahoo.co.jp"
