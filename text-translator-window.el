@@ -140,7 +140,7 @@ result, please add a following code to your .emacs.
         (let ((keymap (make-sparse-keymap)))
           (define-key keymap text-translator-window-prefix-key
             text-translator-window-mode-pkey-map)
-          map))
+          keymap))
   (use-local-map text-translator-window-mode-map)
   (run-hooks 'text-translator-window-mode-hook))
 
