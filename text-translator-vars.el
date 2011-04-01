@@ -216,6 +216,10 @@ This value has hash table of translation site data.")
   "The internal variable of `text-translator'.
 This variable used by the translation process monitoring timer.")
 
+(defvar text-translator-send-string nil
+  "The debug purpose variable of `text-translator'.
+This variable has send string of last request.")
+
 (provide 'text-translator-vars)
 
 ;;; text-translator-vars.el ends here

@@ -228,36 +228,39 @@ specified site, and receives translation result."
       (set-process-filter proc 'text-translator-client-filter)
       (process-send-string
        proc
-       (concat
-        (cond
-         (post-str
-          ;; use POST method
-          (concat "POST " (concat "http://" (nth 1 type) (nth 2 type)) "\r\n"))
-         (t
-          ;; use GET method
-          (concat "GET " (format (concat "http://" (nth 1 type) (nth 2 type))
-                                 enc-str) "\r\n")))
-        (and text-translator-proxy-server
-             text-translator-proxy-user
-             text-translator-proxy-password
-             (format "Proxy-Authorization: Basic %s \r\n"
-                     (base64-encode-string
-                      (concat text-translator-proxy-user ":"
-                              text-translator-proxy-password))))
-        "HOST: " (nth 1 type) "\r\n"
-        "User-Agent: " text-translator-user-agent "\r\n"
-        "Accept-Encoding: identity\r\n"
-        "Accept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7\r\n"
-        "Keep-Alive: 300" "\r\n"
-        "Connection: keep-alive" "\r\n"
-        (when post-str
-          (concat
-           "Content-Type: application/x-www-form-urlencoded\r\n"
-           "Content-Length: "
-           (number-to-string (string-bytes post-str)) "\r\n"
-           "\r\n"
-           post-str "\r\n"))
-        "\r\n"))
+       (setq text-translator-send-string
+             (concat
+              (cond
+               (post-str
+                ;; use POST method
+                (concat "POST "
+                        (concat "http://" (nth 1 type) (nth 2 type)) "\r\n"))
+               (t
+                ;; use GET method
+                (concat "GET "
+                        (format (concat "http://" (nth 1 type) (nth 2 type))
+                                       enc-str) "\r\n")))
+              (and text-translator-proxy-server
+                   text-translator-proxy-user
+                   text-translator-proxy-password
+                   (format "Proxy-Authorization: Basic %s \r\n"
+                           (base64-encode-string
+                            (concat text-translator-proxy-user ":"
+                                    text-translator-proxy-password))))
+              "HOST: " (nth 1 type) "\r\n"
+              "User-Agent: " text-translator-user-agent "\r\n"
+              "Accept-Encoding: identity\r\n"
+              "Accept-Charset: Shift_JIS,utf-8;q=0.7,*;q=0.7\r\n"
+              "Keep-Alive: 300" "\r\n"
+              "Connection: keep-alive" "\r\n"
+              (when post-str
+                (concat
+                 "Content-Type: application/x-www-form-urlencoded\r\n"
+                 "Content-Length: "
+                 (number-to-string (string-bytes post-str)) "\r\n"
+                 "\r\n"
+                 post-str "\r\n"))
+              "\r\n")))
       ;; Display only once (Countermesure for text-translator-all).
       (when (and (not sync)
                  (= 1 (length text-translator-processes-alist)))
