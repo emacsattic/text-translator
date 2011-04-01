@@ -234,12 +234,19 @@ specified site, and receives translation result."
                (post-str
                 ;; use POST method
                 (concat "POST "
-                        (concat "http://" (nth 1 type) (nth 2 type)) "\r\n"))
+                        (if text-translator-proxy-server
+                            (concat "http://" (nth 1 type) (nth 2 type))
+                          (nth 2 type))
+                        "\r\n"))
                (t
                 ;; use GET method
                 (concat "GET "
-                        (format (concat "http://" (nth 1 type) (nth 2 type))
-                                       enc-str) "\r\n")))
+                        (format
+                         (if text-translator-proxy-server
+                             (concat "http://" (nth 1 type) (nth 2 type))
+                           (nth 2 type))
+                         enc-str)
+                        "\r\n")))
               (and text-translator-proxy-server
                    text-translator-proxy-user
                    text-translator-proxy-password
