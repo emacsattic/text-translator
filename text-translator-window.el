@@ -137,8 +137,8 @@ result, please add a following code to your .emacs.
   (setq mode-name text-translator-window-mode-name)
   (setq major-mode 'text-translator-window-mode)
   (setq text-translator-window-mode-map
-        (let ((map (make-sparse-keymap)))
-          (define-key map text-translator-window-prefix-key
+        (let ((keymap (make-sparse-keymap)))
+          (define-key keymap text-translator-window-prefix-key
             text-translator-window-mode-pkey-map)
           map))
   (use-local-map text-translator-window-mode-map)
