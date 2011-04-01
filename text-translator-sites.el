@@ -33,7 +33,7 @@
      "translate.google.com"
      "/ HTTP/1.1"
      "js=n&prev=_t&hl=ja&ie=UTF-8&text=%s&file=&sl=%o&tl=%t"
-     utf-8
+     utf-8-dos
      (lambda ()
        (text-translator-extract-tag-exclusion-string
         "<span id=result_box[^>]*>\\(\\(<span [^>]*>\\([^<]\\|<br>\\)*</span>\\)+\\)</span>"))
