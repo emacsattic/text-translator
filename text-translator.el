@@ -279,10 +279,10 @@ specified site, and receives translation result."
         (cdar text-translator-all-results)))))
 
 (defun text-translator-client-filter (proc str)
-  (let (buf-name buf-bytes content-len chunk-len all parse-method)
+  (let (buf-name buf-bytes buf-string content-len chunk-len all parse-method)
     (with-current-buffer (process-buffer proc)
       (goto-char (process-mark proc))
-      (insert (text-translator-decode-string str (process-name proc)))
+      (insert str)
       (set-marker (process-mark proc) (point))
       ;; Initialize a variable
       (setq buf-name     (buffer-name)
@@ -309,15 +309,18 @@ specified site, and receives translation result."
                            buf-name text-translator-debug))
           (when text-translator-debug
             (message ";; chunk-len: %s" chunk-len)))))
+      (setq buf-string (buffer-string))
       ;; Extract a translated string.
-      (setq str (text-translator-replace-string
-                 (or (cond
-                      ((functionp parse-method)
-                       (funcall parse-method))
-                      ((re-search-backward parse-method nil t)
-                       (match-string 1)))
-                     "")
-                 text-translator-post-string-replace-alist)))
+      (with-temp-buffer
+        (insert (text-translator-decode-string buf-string (process-name proc)))
+        (setq str (text-translator-replace-string
+                   (or (cond
+                        ((functionp parse-method)
+                         (funcall parse-method))
+                        ((re-search-backward parse-method nil t)
+                         (match-string 1)))
+                       "")
+                   text-translator-post-string-replace-alist))))
     ;; Clean up
     (when (or (not (string= "" str))
               (and content-len
@@ -494,6 +497,8 @@ specified site, and receives translation result."
                                 text-translator-charset-alist)))))
     (cond
      (charset
+      (when text-translator-debug
+        (message ";; charset %s (%s)" http-charset charset))
       (decode-coding-string str charset))
      (t
       str))))
