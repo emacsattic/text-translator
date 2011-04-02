@@ -141,7 +141,7 @@
   :type 'string
   :group 'text-translator)
 
-(defcustom text-translator-accept-charset "Shift_JIS,utf-8;q=0.7,*;q=0.7"
+(defcustom text-translator-accept-charset "utf-8"
   "The data of Accept-charset request header."
   :type 'string
   :group 'text-translator)
