@@ -131,7 +131,7 @@
   :group 'text-translator)
 
 (defcustom text-translator-user-agent
-  (concat "Text-translator/" text-translator-version)
+  (concat "Mozilla/5.0 Text-translator/" text-translator-version)
   "*text-translator's User Agent."
   :type  'string
   :group 'text-translator)
@@ -208,6 +208,11 @@ The default value is `nil'."
   '(("Shift_JIS"   . sjis)
     ("ISO-2022-JP" . iso-2022-7bit)
     ("EUC-JP"      . euc-jp)
+    ("ISO-8859-6"  . iso-8859-6)
+    ("KOI8-R"      . koi8-r)
+    ("EUC-KR"      . euc-kr)
+    ("GB2312"      . cn-gb-2312)
+    ("Big5"        . big5)
     ("UTF-8"       . utf-8))
   "The alist of HTTP charset and emacs charset.")
 
