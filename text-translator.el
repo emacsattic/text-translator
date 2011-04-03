@@ -91,7 +91,9 @@ Use Excite, Google and so translation site.
           text-translator-all-before-string nil)
     (text-translator-client
      (text-translator-check-valid-translation-engine
-      (and (functionp engine-or-func) (funcall engine-or-func engine str))
+      (and (not arg)
+           (functionp engine-or-func)
+           (funcall engine-or-func engine str))
       engine)
      str)
     (text-translator-timeout-start)))
