@@ -115,7 +115,7 @@ English to Japanese.  Otherwise, from Japanese to English."
         (site   (text-translator-get-engine-type-or-site engine))
         (percentage 40))
     (cond
-     ((member site '("enja" "jaen"))
+     ((member site '("enja" "jaen" ""))
       (cond
        ((> (/ (* (length (replace-regexp-in-string "[^A-Za-z 0-9]+" "" str))
                    100)
@@ -550,7 +550,8 @@ Return ENGINE if it is already registered, otherwise return VALID-ENGINE."
   "Get a translation engine type or site name.
 If optional argument GET-SITE is nil, return a translation engine type.
 Otherwise return a translation site name."
-  (nth (if get-site 0 1) (split-string engine "_")))
+  (let ((val (nth (if get-site 0 1) (split-string engine "_"))))
+    (if val val "")))
 
 ;; by google2.el
 (defun text-translator-url-encode-string (str &optional coding)
