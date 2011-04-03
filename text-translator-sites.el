@@ -119,16 +119,22 @@
 
     ;; Livedoor.com
     ("livedoor.com"
-     "translate.livedoor.com"
-     "/ HTTP/1.1"
-     "clear_flg=1&src_text=%s&trns_type=%o,%t&sumit=翻訳"
+     "livedoor-translate.naver.jp"
+     "/text/ HTTP/1.1"
+     "translateParams.slang=%o&translateParams.tlang=%t&translateParams.originalText=%s"
      utf-8-dos
-     "<textarea name=\"tar_text\" cols=\"40\" rows=\"10\" wrap=\"physical\">\\([^<]*\\)</textarea>"
-     (("1" . "2") ("2" . "1")
-      ("2" . "9") ("9" . "2")
-      ("2" . "6") ("6" . "2"))
-     (("1" . "en") ("2" . "ja")
-      ("6" . "ch") ("9" . "ko")))
+     "<textarea[^>]*id=\"trans-lang-text\"[^>]*>\\([^<]*\\)</textarea>"
+     (("en" . "ja") ("en" . "de") ("en" . "fr")
+      ("en" . "it") ("en" . "es") ("en" . "pt")
+      ("de" . "en") ("fr" . "en") ("it" . "en")
+      ("es" . "en") ("pt" . "en")
+      ("ja" . "en") ("ja" . "de") ("ja" . "fr")
+      ("ja" . "it") ("ja" . "es") ("ja" . "pt")
+      ("ja" . "ko") ("ja" . "zh")
+      ("de" . "ja") ("fr" . "ja") ("it" . "ja")
+      ("es" . "ja") ("pt" . "ja") ("ko" . "ja")
+      ("zh" . "ja"))
+     (("zh" . "ch")))
 
     ;; Fresheye.com
     ("fresheye.com"
