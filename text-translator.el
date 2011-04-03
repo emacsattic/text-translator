@@ -76,8 +76,8 @@ Use Excite, Google and so translation site.
                       (format "Select translation engine (default %s): "
                               engine)
                       text-translator-site-data-alist nil t nil nil engine))))
-    ;; Initialize (init global variable, delete running processess etc...).
     (text-translator-proc-clear)
+    ;; Initialize (init global variable, delete running processess etc...).
     (setq str
           (cond
            (last
@@ -89,14 +89,28 @@ Use Excite, Google and so translation site.
           text-translator-all-results       nil
           text-translator-processes-alist   nil
           text-translator-all-before-string nil)
-    (text-translator-client
+    (cond
+     ;; The translating engine and traslanting string is same of last
+     ;; translation. So, Text-translator display last result.
+     ((and (= text-translator-all-site-number
+              (length (car text-translator-all-history)))
+           (string= str (nth 1 (caar text-translator-all-history)))
+           (string= engine (nth 0 (caar text-translator-all-history))))
+      (setq text-translator-all-results
+            (list (cons (concat text-translator-buffer engine)
+                        (nth 2 (assoc engine
+                                      (car text-translator-all-history))))))
+      (funcall text-translator-display-function))
+     ;; Newly translating
+     (t
+      (text-translator-client
      (text-translator-check-valid-translation-engine
       (and (not arg)
            (functionp engine-or-func)
            (funcall engine-or-func engine str))
       engine)
      str)
-    (text-translator-timeout-start)))
+    (text-translator-timeout-start)))))
 
 (defun text-translator-translate-by-auto-selection (arg)
   "Function that translates by auto selection of translation
@@ -174,9 +188,26 @@ the selected type."
                         (completing-read "Select type: " keys nil t)))
       (let ((sites (gethash key hash)))
         (setq text-translator-all-site-number (length sites))
-        (dolist  (i sites)
-          (text-translator-client i str t))
-        (text-translator-timeout-start)))))
+        (cond
+         ;; The translating engine and traslanting string is same of last
+         ;; translation. So, Text-translator display last result.
+         ((and (= (length (car text-translator-all-history))
+                  text-translator-all-site-number)
+               (string= (nth 1 (caar text-translator-all-history)) str)
+               (member (nth 0 (caar text-translator-all-history)) sites))
+          (dolist (i sites)
+            (setq text-translator-all-results
+                  (cons (cons (concat text-translator-buffer i)
+                              (nth 2
+                                   (assoc i
+                                          (car text-translator-all-history))))
+                        text-translator-all-results)))
+          (funcall text-translator-display-function))
+         ;; Newly translating
+         (t
+          (dolist  (i sites)
+            (text-translator-client i str t))
+          (text-translator-timeout-start)))))))
 
 (defun text-translator-all-by-auto-selection (arg)
   "The function to translate in all of translate sites, whose
