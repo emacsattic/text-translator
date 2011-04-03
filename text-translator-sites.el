@@ -86,17 +86,22 @@
      "sequence=core&mode=html&charset=UTF-8&template=results_en-us.htm&language=%o/%t&srctext=%s"
      utf-8
      "<textarea name=\"dsttext\" cols=\"40\" rows=\"6\" style=\"width:99%;height:142px;\" id=\"resultsBox\">\\([^<]*\\)</textarea>"
-     (("English" . "Spanish") ("Spanish" . "English")
-      ("English" . "French")  ("French" . "English")
-      ("English" . "German")  ("German" . "English")
-      ("English" . "Italian") ("Italian" . "English")
-      ("English" . "Dutch")   ("Dutch" . "English")
+     (("English" . "Spanish")    ("Spanish" . "English")
+      ("English" . "French")     ("French" . "English")
+      ("English" . "German")     ("German" . "English")
+      ("English" . "Italian")    ("Italian" . "English")
+      ("English" . "Dutch")      ("Dutch" . "English")
       ("English" . "Portuguese") ("Portuguese" . "English")
       ("English" . "Norwegian"))
-     (("English" . "en") ("Spanish" . "es")
-      ("French" . "fr") ("German" . "de")
-      ("Italian" . "it") ("Dutch" . "nl")
-      ("Portuguese" . "pt") ("Norwegian" . "no")))
+
+     (("English"    . "en")
+      ("Spanish"    . "es")
+      ("French"     . "fr")
+      ("German"     . "de")
+      ("Italian"    . "it")
+      ("Dutch"      . "nl")
+      ("Portuguese" . "pt")
+      ("Norwegian"  . "no")))
     ("freetranslation.com"
      "ets6.freetranslation.com"
      "/ HTTP/1.1"
@@ -106,8 +111,10 @@
      (("English" . "Russian") ("Russian" . "English")
       ("English" . "SimplifiedChinese")
       ("English" . "TraditionalChinese"))
-     (("English" . "en") ("Russian" . "ru")
-      ("SimplifiedChinese" . "ch") ("TraditionalChinese" . "tw")))
+     (("English" . "en")
+      ("Russian" . "ru")
+      ("SimplifiedChinese" . "ch")
+      ("TraditionalChinese" . "tw")))
     ("freetranslation.com"
      "tets9.freetranslation.com"
      "/ HTTP/1.1"
@@ -115,7 +122,15 @@
      utf-8-dos
      "<textarea name=\"dsttext\" cols=\"40\" rows=\"6\" style=\"width:99%;height:142px;\" id=\"resultsBox\">\\([^<]*\\)</textarea>"
      (("English" . "Japanese") ("Japanese" . "English"))
-     (("English" . "en") ("Japanese" . "ja")))
+     (("English" . "en")
+      ("Japanese" . "ja")))
+    ;; Freetranslation english -> arabia
+    ;; - lwSrc  : src language (english, eng)
+    ;; - lwDest : dst language (arabia,  ara)
+    ;; - LwPair : magic number (calced by javascript code)
+    ;; - srcText : source text
+    ;; Since the calculation of LwPair have to see javascript code,
+    ;; Text-translator currently is not support a freetranslation eng -> ara translation.
 
     ;; Livedoor.com
     ("livedoor.com"
@@ -246,19 +261,23 @@
      (("JA" . "ja") ("PT" . "pt")
       ("EN" . "en")))
 
-    ;; Yahoo.co.jp
-    ("yahoo.co.jp"
-     "honyaku.yahoo.co.jp"
-     "/transtext HTTP/1.1"
-     "both=TH&text=%s&clearFlg=1&eid=CR-%o%t"
-     utf-8
-     "<textarea rows=12 cols=30 name=\"trn_text\" id=\"trn_textText\" class=\"smaller\"[ 	]*[^>]*>\\([^<]*\\)</textarea>"
-     (("E" . "J") ("J" . "E")
-      ("C" . "J") ("J" . "C-CN")
-      ("K" . "J") ("J" . "K"))
-     (("E" . "en") ("J" . "ja")
-      ("C" . "ch") ("C-CN" . "ch")
-      ("K" . "ko")))
+    ;; Yahoo.co.jp requires a value of hidden input tag that have id "TTcrumb" to translate.
+    ;; So, Text-translator have to visit a http://honyaku.yahoo.co.jp once.
+    ;; The current text-translator do not support a mechanism corresponding to this.
+    ;; So, Text-translator currently commented out a supporting yahoo.co.jp.
+;;    ;; Yahoo.co.jp
+;;    ("yahoo.co.jp"
+;;     "honyaku.yahoo.co.jp"
+;;     "/transtext HTTP/1.1"
+;;     "both=TH&text=%s&clearFlg=1&eid=CR-%o%t"
+;;     utf-8
+;;     "<textarea rows=12 cols=30 name=\"trn_text\" id=\"trn_textText\" class=\"smaller\"[ 	]*[^>]*>\\([^<]*\\)</textarea>"
+;;     (("E" . "J") ("J" . "E")
+;;      ("C" . "J") ("J" . "C-CN")
+;;      ("K" . "J") ("J" . "K"))
+;;     (("E" . "en") ("J" . "ja")
+;;      ("C" . "ch") ("C-CN" . "ch")
+;;      ("K" . "ko")))
 
     ;; Ocn.ne.jp
     ("ocn.ne.jp"
