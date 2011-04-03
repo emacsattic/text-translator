@@ -108,14 +108,25 @@ engine.  Function that select automatically is value of
 English) translation.
 If alphabet ratio is over 40%, select engine which is translating from
 English to Japanese.  Otherwise, from Japanese to English."
-  (setq str (or str ""))
-  (format
-   "%s_%s"
-   (text-translator-get-engine-type-or-site engine t)
-   (if (> (/ (* (length (replace-regexp-in-string "[^A-Za-z]+" "" str)) 100)
-             (length str))
-          40)
-       "enja" "jaen")))
+  (let ((str (or str ""))
+        (engine (text-translator-get-engine-type-or-site engine t))
+        (site   (text-translator-get-engine-type-or-site engine))
+        (percentage 40))
+    (cond
+     ((member site '("enja" "jaen"))
+      (cond
+       ((> (/ (* (length (replace-regexp-in-string "[^A-Za-z 0-9]+" "" str))
+                   100)
+                (length str))
+             percentage)
+        (format "%s_enja" engine))
+       (t
+        (format "%s_jaen" engine))))
+     (t
+      (message (concat "Selected engine is not enja or jaen. "
+                       "So use selected engine : %s")
+               engine)
+      engine))))
 
 ;; Todo: To replace to function that treates history more generally.
 (defun text-translator-translate-last-string ()
