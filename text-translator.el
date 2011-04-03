@@ -144,13 +144,6 @@ English to Japanese.  Otherwise, from Japanese to English."
                engine)
       engine))))
 
-;; Todo: To replace to function that treates history more generally.
-(defun text-translator-translate-last-string ()
-  "The function to translate in the translation site that
-I choose with the character string that I translated in the last time."
-  (interactive)
-  (text-translator nil t))
-
 (defun text-translator-region-or-read-string (&optional prompt)
   "If mark is active, return the region, otherwise, read string with PROMPT."
   (cond
