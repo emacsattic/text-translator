@@ -26,7 +26,7 @@ ELC_EXT			=	$(EL_EXT:.el=.elc)
 
 DISTDIR			=	$(PACKAGE)-$(VERSION)
 TARBALL			=	$(PACKAGE)-$(VERSION).tar.gz
-FILES			=	Makefile README.en README.ja $(EL) $(EL_NOT_COMPILE)
+FILES			=	Makefile README.en README.ja $(EL) $(EL_EXT) $(EL_NOT_COMPILE)
 
 BATCH_FLAGS		=	-batch -q -no-site-file
 
