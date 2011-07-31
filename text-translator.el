@@ -92,6 +92,8 @@ Use Excite, Google and so translation site.
     (cond
      ;; The translating engine and traslanting string is same of last
      ;; translation. So, Text-translator display last result.
+     ;; Todo: To check whether or not the result string has
+     ;; "TRANSLATION: (TIMEOUT|FAILED)".
      ((and (= text-translator-all-site-number
               (length (car text-translator-all-history)))
            (string= str (nth 1 (caar text-translator-all-history)))
@@ -184,6 +186,8 @@ the selected type."
         (cond
          ;; The translating engine and traslanting string is same of last
          ;; translation. So, Text-translator display last result.
+         ;; Todo: To check whether or not the result string has
+         ;; "TRANSLATION: (TIMEOUT|FAILED)".
          ((and (= (length (car text-translator-all-history))
                   text-translator-all-site-number)
                (string= (nth 1 (caar text-translator-all-history)) str)
@@ -421,19 +425,19 @@ specified site, and receives translation result."
 
 (defun text-translator-update-hashtable ()
   (let ((hash (make-hash-table :test 'equal)))
-    (mapc '(lambda (x)
-             (let ((matched (replace-regexp-in-string "\\([^_]*\\)_"
-                                                      ""
-                                                      (car x))))
-               (unless (or (string= (car x) matched)
-                           (eq ?* (aref matched 0)))
-                 (cond
-                  ((gethash matched hash)
-                   (puthash matched
-                            (cons (car x) (gethash matched hash))
-                            hash))
-                  (t
-                   (puthash matched (list (car x)) hash))))))
+    (mapc #'(lambda (x)
+	      (let ((matched (replace-regexp-in-string "\\([^_]*\\)_"
+						       ""
+						       (car x))))
+		(unless (or (string= (car x) matched)
+			    (eq ?* (aref matched 0)))
+		  (cond
+		   ((gethash matched hash)
+		    (puthash matched
+			     (cons (car x) (gethash matched hash))
+			     hash))
+		   (t
+		    (puthash matched (list (car x)) hash))))))
           text-translator-site-data-alist)
     hash))
 
