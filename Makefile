@@ -1,7 +1,3 @@
-#
-#	$Id: Makefile,v 1.11 2007/12/02 20:49:37 s122139 Exp $
-#
-
 SHELL			=	/bin/sh
 MKDIR			=	mkdir -p
 INSTALL			=	/usr/bin/install -c
@@ -19,12 +15,14 @@ EL			=	text-translator.el         \
 				text-translator-vars.el    \
 				text-translator-window.el
 
-#				text-translator-popup.el   \
-#				text-translator-pos-tip.el \
+EL_EXT			=	text-translator-popup.el \
+				text-translator-pos-tip.el
 
-EEL_NOT_COMPILE		=	text-translator-load.el \
+EL_NOT_COMPILE		=	text-translator-load.el \
 				text-translator-test.el
 ELC			=	$(EL:.el=.elc)
+
+ELC_EXT			=	$(EL_EXT:.el=.elc)
 
 DISTDIR			=	$(PACKAGE)-$(VERSION)
 TARBALL			=	$(PACKAGE)-$(VERSION).tar.gz
@@ -35,7 +33,11 @@ BATCH_FLAGS		=	-batch -q -no-site-file
 
 all : compile-el
 
+el_all : compile-el compile-el-ext
+
 compile-el : $(ELC)
+
+compile-el-ext : $(ELC_EXT)
 
 install : compile-el
 	@if [ ! -d $(INSTALLDIR) ]; then \
@@ -44,7 +46,7 @@ install : compile-el
 	$(INSTALL) -m 644 $(EL) $(ELC) $(EL_NOT_COMPILE) $(INSTALLDIR)
 
 clean :
-	-$(RM) $(ELC) *.patch.gz $(PACKAGE)-*.tar.bz2
+	-$(RM) $(ELC) $(ELC_EXT) *.patch.gz $(PACKAGE)-*.tar.gz $(PACKAGE)-*.tar.bz2
 
 tarball: Makefile
 	$(MAKE) VERSION=`$(EMACS) $(BATCH_FLAGS)            \
