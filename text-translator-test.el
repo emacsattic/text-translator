@@ -38,7 +38,7 @@
 
 (defvar text-translator-test-google.com
   '("google.com" .
-    (("en" "ja" "Japan" "日本")
+    (("en" "ja" "Japan" "日本の")
      ("ja" "en" "日本" "Japan")
      ("en" "es" "Japan" "Japón")
      ("es" "en" "Japón" "Japan")
@@ -50,7 +50,7 @@
      ("it" "en" "Inglese" "English")
      ("en" "ar" "Japan" "اليابان")
      ("ar" "en" "اللغة الإنجليزية" "English")
-     ("de" "fr" "Englisch" "En anglais")
+     ("de" "fr" "Englisch" "Anglaise")
      ("fr" "de" "En anglais" "Englisch")
      ("en" "pt" "Japan" "Japão")
      ("pt" "en" "Japão" "Japan")
@@ -59,7 +59,7 @@
      ("en" "ko" "Japan" "일본")
      ("ko" "en" "일본" "Japan")
      ("en" "ch" "Hello, World" "你好，世界")
-     ("ch" "en" "你好，世界" "Hello, world")
+     ("ch" "en" "你好，世界" "Hello, World")
      ("en" "tw" "China" "中國")
      ("tw" "en" "中國" "China")
      ("ch" "tw" "中国" "中國")

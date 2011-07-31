@@ -15,13 +15,14 @@ INSTALLDIR		=	$(LISPDIR)/$(PACKAGE)
 
 EL			=	text-translator.el         \
 				text-translator-load.el    \
-				text-translator-popup.el   \
-				text-translator-pos-tip.el \
 				text-translator-sites.el   \
 				text-translator-vars.el    \
 				text-translator-window.el
 
-EL_NOT_COMPILE		=	text-translator-load.el \
+#				text-translator-popup.el   \
+#				text-translator-pos-tip.el \
+
+EEL_NOT_COMPILE		=	text-translator-load.el \
 				text-translator-test.el
 ELC			=	$(EL:.el=.elc)
 

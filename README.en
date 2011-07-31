@@ -1,11 +1,20 @@
-
 translates the character string on Emacs.
 this packages use the text translation service that exists
 on the Internet.
 
 * Configuration sample
 
-put text-translator.el and text-translator-vars.el to load-path.
+Put the following elisp files to your load-path directory.
+
+ - text-translator.el
+ - text-translator-vars.el
+ - text-translator-sites.el
+ - text-translator-window.el
+
+You can use Makefile too.
+
+ $ make
+ $ make install
 
 ** use autoload
 
@@ -16,23 +25,14 @@ put text-translator.el and text-translator-vars.el to load-path.
 ;;;; not autoload, use require
 (require 'text-translator)
 
-** change prefix key
-
-;; set prefix-key to M-n
-(setq text-translator-prefix-key "\M-n")
-
 ** set global key
 
 (global-set-key "\C-x\M-t" 'text-translator)
 (global-set-key "\C-x\M-T" 'text-translator-translate-last-string)
 
-** add keys to major-mode.
-
-(add-hook
- 'text-translator-mode-hook
- (lambda()
-   ;; if you do not change prefix-key, it is executed by C-c M-a
-   (define-key text-translator-mode-pkey-map "\M-a" 'text-translator-translate-recent-type)))
+Using C-x M-t, translates the selected text by selected language.
+Using C-x M-T, translates the selected text by all possibility engines
+that can be translates in the selected language.
 
 ** use proxy
 
@@ -48,19 +48,9 @@ put text-translator.el and text-translator-vars.el to load-path.
       'text-translator-translate-by-auto-selection-enja)
 ;; set global-key
 (global-set-key "\C-xt" 'text-translator-translate-by-auto-selection)
+(global-set-key "\C-xT" 'text-translator-all-by-auto-selection)
 
-* keys allocated to major-mode.
-
-you can see key allocation by typing prefix-key C-h on the
-text-translator-mode.
-
-\C-q   text-translator-quit
-\C-a   text-translator-translate-recent-type
-\C-l   text-translator-display-last-string
-\C-d   text-translator-translate-default
-\C-s   text-translator-toggle-leave-string
-
-* translation sites
+* Translation sites.
 
 - google.com
 - yahoo.com
@@ -68,206 +58,10 @@ text-translator-mode.
 - livedoor.com
 - fresheye.com
 - excite.co.jp
-- yahoo.co.jp
+- yahoo.co.jp (Currently not available)
 - ocn.ne.jp
 - lou5.jp
-
-* interactive function
-
-M-x text-translator
-
-    the function which does text translation.
-    using Excite translation and Google Translation etc.
-    1. mark is active
-     - prefix was supplied.
-       1. choose translation site which you use.
-       2. translate by type which you selected.
-     - prefix was not supplied.
-       translate range of region that you selected by
-       first element of text-translator-engine-history.
-       (if text-translator-engine-history is nil,
-        use text-translator-default-engine.)
-    2. mark is deactive
-     - prefix was supplied.
-       1. chose translation site which you use.
-       2. translate vlaue which you input from minibuffer by
-          type you selected.
-     - prefix was not supplied.
-       translate value which you input from minibuffer by
-       first element of text-translator-engine-history.
-       (if text-translator-engine-history is nil, use
-       text-translator-default-engine.)
-    if you are using session.el, translation site is
-    continued to the next time.
-
-M-x text-translator-translate-last-string
-
-    The function to translate in the translation site that
-    I chose with the character string that I translated in
-    the last time.
-
-M-x text-translator-quit
-
-    Functions that closes buffer for text-translator.
-    if Window only have *translated* buffer, change another
-    buffer.
-
-M-x text-translator-toggle-leave-string
-
-    Functions that change value of
-    text-translator-leave-string. Change display(not
-    display) to a translation result buffer of character
-    string that used last time.
-
-M-x text-translator-display-last-string
-
-    Function that displays translated character string last
-    time.
-    Default display to minibuffer. if prefix-arg, insert
-    buffer.
-
-M-x text-translator-translate-recent-type
-
-    Function that translates by type corresponding to the
-    language that used last time.
-    For example, last time, if you have used
-    excite.co.jp_enja, this time select from **_enja, and,
-    translates.
-
-M-x text-translator-translate-default
-
-    Function that translates by default type only.
-    Default is value of text-translator-default-engine.
-
-M-x text-translator-translate-by-auto-selection
-
-    Function that translates by auto selection of
-    translation engine. Function that select automatically
-    is value of text-translator-auto-selection-func.
-
-* configurable variables
-
-text-translator-prefix-key
-
-    Prefix key for text-translator commands.
-    Default is C-c.
-
-text-translator-auto-window-adjust
-
-    Whether or not you adjust height of window displayed by
-    dividing.
-    Default is t. adjust a window.
-
-text-translator-window-min-height
-
-    Specify minimum height of the translation result display
-    buffer.
-    Default is 4.
-
-text-translator-leave-string
-
-    Whether or not you leave the character string before the
-    translating.
-    Default is nil. not leave.
-
-text-translator-pre-string-replace-alist
-
-    Rule that converts character string that wants to
-    translate.
-
-text-translator-post-string-replace-alist
-
-    Rule that converts character string after the
-    translation.
-
-text-translator-proxy-server
-
-    Proxy server used.
-    Default is nil. not use proxy.
-
-text-translator-proxy-port
-
-    Port number used.
-    Default is 8080.
-
-text-translator-proxy-user
-
-    Basic proxy authorization user name.
-    Default is nil.
-
-text-translator-proxy-password
-
-    Basic proxy authorization password.
-    Default is nil.
-
-text-translator-site-data-alist
-
-    The alist where setting of the site which is used for
-    text translation is described.
-
-    ("Web site name and translation type"
-     "Host name"
-     "POST path and HTTP version"
-     "POST contents"
-     "Character code"
-     "regexp" or "function")
-
-    Form of "Web site name and translation type" is
-    domain underscore input language(two char) output
-    language(two char).
-    two char of language is follows.
-
-        en : English
-        ja : Japanese
-        ch : Chinese(simplifiedChinese)
-        tw : Chinese(traditionalChinese)
-        ko : Korean
-        es : Spanish
-        fr : French
-        de : German
-        it : Italian
-        ar : Arabia
-        pt : Portuguese
-        ru : Russian
-        nl : Dutch
-        el : Greek
-        no : Norwegian
-
-text-translator-default-engine
-
-    Translation engine used by default.
-    Default is google.com_enja
-
-text-translator-user-agent
-
-    text-translator's User Agent. Default is Firefox.
-
-text-translator-mode-hook
-
-    Hook run at the end of function `text-translator-mode'.
-
-text-translator-auto-selection-func
-
-    Value is function that select translation engine automatic.
-    this value is function for text-translator-translate-by-auto-selection.
-
-text-translator-kill-linefeed-and-fill-region
-
-    Defualt is nil. if value is non-nil, it deletes
-    linefeed(and CR) from pre translation string("\n" -> " ",
-    "\r" -> ""). and processing to straighten faces with
-    fill-paragraph after the translation. it is
-    countermeasure against the translation engines that
-    processes per line.
-
-text-translator-space-division-languages
-
-    List of language that word is delimited by blank.
-    the value of this variable is as follows.
-
-    en, es, fr, de, it, pt, ru, nl, el, no
-
-* comment
+- traduku.net
 
 * thanks
 
@@ -276,5 +70,4 @@ text-translator-space-division-languages
 # Local Variables:
 # mode: outline
 # mode: auto-fill
-# Coding: iso-2022-7bit
 # End:
