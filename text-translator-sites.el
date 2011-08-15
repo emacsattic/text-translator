@@ -1122,17 +1122,21 @@
 ;;      ("C" . "ch") ("C-CN" . "ch")
 ;;      ("K" . "ko")))
 
-    ;; Ocn.ne.jp
-    ("ocn.ne.jp"
-     "cgi01.ocn.ne.jp"
-     "/cgi-bin/translation/index.cgi HTTP/1.1"
-     "langpair=%o%t&sourceText=%s"
-     utf-8
-     "<TEXTAREA NAME=\"responseText\" ROWS=\"5\" COLS=\"41\" WRAP=\"virtual\" CLASS=\"in2\">\\([^<]*\\)</TEXTAREA>"
-     (("en" . "ja") ("ja" . "en")
-      ("ja" . "ko") ("ko" . "ja")
-      ("ja" . "zh") ("zh" . "ja"))
-     (("zh" . "ch"))))
+    ;; OCN translation have to GET a auth parameter first. But Current
+    ;; text-translator do not supports this mechanizm. So, commented out
+    ;; a suporting ocn.ne.jp currently.
+;;    ;; Ocn.ne.jp
+;;    ("ocn.ne.jp"
+;;     "cgi01.ocn.ne.jp"
+;;     "/cgi-bin/translation/index.cgi HTTP/1.1"
+;;     "langpair=%o%t&sourceText=%s"
+;;     utf-8
+;;     "<TEXTAREA NAME=\"responseText\" ROWS=\"5\" COLS=\"41\" WRAP=\"virtual\" CLASS=\"in2\">\\([^<]*\\)</TEXTAREA>"
+;;     (("en" . "ja") ("ja" . "en")
+;;      ("ja" . "ko") ("ko" . "ja")
+;;      ("ja" . "zh") ("zh" . "ja"))
+;;     (("zh" . "ch")))
+    )
   "The alist where setting of the site which is used for text translation is
 described. To update site-data, evalute `text-translator-site-data-init`."
   :type '(repeat
