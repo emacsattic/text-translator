@@ -1,6 +1,6 @@
 ;;; text-translator-window.el --- Text Translator
 
-;; Copyright (C) 2011  khiker
+;; Copyright (C) 2007-2014  khiker
 
 ;; Author: khiker <khiker.mail+elisp@gmail.com>
 ;;         plus   <MLB33828@nifty.com>
