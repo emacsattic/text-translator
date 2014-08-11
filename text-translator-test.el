@@ -1,8 +1,8 @@
 ;;; text-translator-test.el --- Text Translator
 
-;; Copyright (C) 2007-2014  khiker
+;; Copyright (C) 2007-2014  HAMANO Kiyoto
 
-;; Author: khiker <khiker.mail+elisp@gmail.com>
+;; Author: HAMANO Kiyoto <khiker.mail+elisp@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

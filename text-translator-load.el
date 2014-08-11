@@ -1,9 +1,9 @@
 ;;; text-translator-load.el --- Text Translator
 
-;; Copyright (C) 2007-2014  khiker
+;; Copyright (C) 2007-2014  HAMANO Kiyoto
 
-;; Author: khiker <khiker.mail+elisp@gmail.com>
-;;         plus   <MLB33828@nifty.com>
+;; Author: HAMANO Kiyoto <khiker.mail+elisp@gmail.com>
+;;         plus          <MLB33828@nifty.com>
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
