@@ -161,3 +161,8 @@ If window only have *translated* buffer, change another buffer."
 (provide 'text-translator-window)
 
 ;;; text-translator-window.el ends here
+
+;; Local Variables:
+;; Coding: utf-8
+;; indent-tabs-mode: nil
+;; End:

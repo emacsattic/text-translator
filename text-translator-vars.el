@@ -258,4 +258,5 @@ This variable has send string of last request.")
 
 ;; Local Variables:
 ;; Coding: utf-8
+;; indent-tabs-mode: nil
 ;; End:

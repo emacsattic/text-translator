@@ -37,5 +37,6 @@
 ;;; text-translator-load.el ends here
 
 ;; Local Variables:
-;; Coding: iso-2022-7bit
+;; Coding: utf-8
+;; indent-tabs-mode: nil
 ;; End:

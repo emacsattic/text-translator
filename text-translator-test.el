@@ -359,3 +359,8 @@
 (provide 'text-translator-test)
 
 ;;; text-translator-test.el ends here
+
+;; Local Variables:
+;; Coding: utf-8
+;; indent-tabs-mode: nil
+;; End:

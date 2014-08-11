@@ -1213,7 +1213,11 @@ described. To update site-data, evalute `text-translator-site-data-init`."
   "The alist where setting of the site which is used for text translation is
 described.")
 
-
-
 (provide 'text-translator-sites)
+
 ;;; text-translator-sites.el ends here
+
+;; Local Variables:
+;; Coding: utf-8
+;; indent-tabs-mode: nil
+;; End:

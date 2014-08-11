@@ -641,8 +641,10 @@ Otherwise return a translation site name."
 (text-translator-site-data-init)        ; init
 
 (provide 'text-translator)
+
 ;;; text-translator.el ends here
 
 ;; Local Variables:
 ;; Coding: utf-8
+;; indent-tabs-mode: nil
 ;; End:

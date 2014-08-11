@@ -86,3 +86,8 @@ result, please add a following code to your .emacs.
 (provide 'text-translator-pos-tip)
 
 ;;; text-translator-pos-tip.el ends here
+
+;; Local Variables:
+;; Coding: utf-8
+;; indent-tabs-mode: nil
+;; End:

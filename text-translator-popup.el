@@ -89,3 +89,8 @@ result, please add a following code to your .emacs.
 (provide 'text-translator-popup)
 
 ;;; text-translator-popup.el ends here
+
+;; Local Variables:
+;; Coding: utf-8
+;; indent-tabs-mode: nil
+;; End:
