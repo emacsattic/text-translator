@@ -31,7 +31,7 @@
 
 ;; Variables:
 
-(defconst text-translator-version "1.0.50"
+(defconst text-translator-version "1.0.50.20140816"
   "version numbers of this version of text-translator")
 
 (defconst text-translator-buffer "*translated*"
@@ -39,9 +39,6 @@
 
 (defconst text-translator-window-mode-name "Translator"
   "Major mode name for displaying to mode line.")
-
-(defconst text-translator-work-buffer (concat " " text-translator-buffer)
-  "Output Buffer name from translation site.")
 
 (defgroup text-translator nil
   "Text Translator"
@@ -204,25 +201,13 @@ The default value is `nil'."
   :type 'symbol
   :group 'text-translator)
 
-(defvar text-translator-charset-alist
-  '(("Shift_JIS"   . sjis)
-    ("ISO-2022-JP" . iso-2022-7bit)
-    ("EUC-JP"      . euc-jp)
-    ("ISO-8859-6"  . iso-8859-6)
-    ("KOI8-R"      . koi8-r)
-    ("EUC-KR"      . euc-kr)
-    ("GB2312"      . cn-gb-2312)
-    ("Big5"        . big5)
-    ("UTF-8"       . utf-8))
-  "The alist of HTTP charset and emacs charset.")
-
 (defvar text-translator-all-history nil
   "The value has history of all translation.
 This value is list of\(engine before_string after_string\).")
 
 (defvar text-translator-all-results nil
   "The internal variable of `text-translator'.
-This value is list of \(buffer_name after_string\).")
+This value is list of \(engine after_string\).")
 
 (defvar text-translator-all-site-number nil
   "The internal variable of `text-translator'.
@@ -232,7 +217,7 @@ This variables was used to distinguish `text-translator-all' and
 
 (defvar text-translator-all-before-string nil
   "The internal variable of `tex-translator'.
-This value is list of \(buffer_name engine before_string
+This value is list of \(engine before_string
 after_string\).")
 
 (defvar text-translator-processes-alist nil

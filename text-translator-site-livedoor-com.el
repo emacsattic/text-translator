@@ -23,17 +23,21 @@
 
 ;;; Code:
 
+(require 'json)
+
 (defconst text-translator-site-livedoor-com--request
   (mapconcat #'identity
-             '("translateParams.slang=%o"
+             '("m=ajaxExecute"
+               "translateParams.slang=%o"
                "translateParams.tlang=%t"
-               "translateParams.originalText=%s")
+               "translateParams.originalText=%s"
+               "translateParams.langDetect=N")
              "&"))
 
 (defvar text-translator-site-livedoor-com
   `(("livedoor.com"
-     "livedoor-translate.naver.jp"
-     "/text/ HTTP/1.1"
+     "GET"
+     "http://livedoor-translate.naver.jp/text/"
      ,text-translator-site-livedoor-com--request
      utf-8-dos
      text-translator-site-livedoor-com--extract
@@ -50,8 +54,13 @@
      (("zh" . "ch")))))
 
 (defun text-translator-site-livedoor-com--extract ()
-  (text-translator-extract-tag-exclusion-string
-   "<textarea[^>]*id=\"trans-lang-text\"[^>]*>\\([^<]*\\)</textarea>"))
+  (let ((json (json-read))
+        res)
+    (when (setq res (assoc 'translateJsonResult json))
+      (let ((array (json-read-from-string (cdr res)))
+            translated)
+        (when (setq translated (assoc 'translatedText (aref array 0)))
+          (cdr translated))))))
 
 (provide 'text-translator-site-livedoor-com)
 

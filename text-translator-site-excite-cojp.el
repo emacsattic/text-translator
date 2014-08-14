@@ -25,8 +25,8 @@
 
 (defvar text-translator-site-excite-cojp
   '(("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/english/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/english/"
      "wb_lp=%o%t&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -34,8 +34,8 @@
      (("EN" . "en") ("JA" . "ja")))
 
     ("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/chinese/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/chinese/"
      "wb_lp=%o%t&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -43,8 +43,8 @@
      (("JA" . "ja") ("CH" . "ch")))
 
     ("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/chinese/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/chinese/"
      "wb_lp=%o%t&big5=yes&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -52,8 +52,8 @@
      (("JA" . "ja") ("CH" . "tw")))
 
     ("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/korean/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/korean/"
      "wb_lp=%o%t&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -61,8 +61,8 @@
      (("JA" . "ja") ("KO" . "ko")))
 
     ("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/french/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/french/"
      "wb_lp=%o%t&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -72,8 +72,8 @@
       ("EN" . "en")))
 
     ("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/german/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/german/"
      "wb_lp=%o%t&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -83,8 +83,8 @@
       ("EN" . "en")))
 
     ("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/italian/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/italian/"
      "wb_lp=%o%t&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -94,8 +94,8 @@
       ("EN" . "en")))
 
     ("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/spanish/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/spanish/"
      "wb_lp=%o%t&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -105,8 +105,8 @@
       ("EN" . "en")))
 
     ("excite.co.jp"
-     "www.excite.co.jp"
-     "/world/portuguese/ HTTP/1.1"
+     "GET"
+     "http://www.excite.co.jp/world/portuguese/"
      "wb_lp=%o%t&before=%s"
      utf-8
      text-translator-site-excite-cojp--extract
@@ -116,8 +116,11 @@
       ("EN" . "en")))))
 
 (defun text-translator-site-excite-cojp--extract ()
-  (text-translator-extract-tag-exclusion-string
-   "<textarea name=\"after\" id=\"after\">\\([^<]*\\)</textarea>"))
+  (let ((regex "<textarea id=\"after\" [^>]*>\\([^<]*\\)</textarea>")
+        str)
+    (when (setq str (text-translator-extract-tag-exclusion-string regex))
+      (setq str (replace-regexp-in-string "&#010;" "" str)))
+    str))
 
 (provide 'text-translator-site-excite-cojp)
 

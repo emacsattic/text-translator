@@ -25,11 +25,14 @@
 ;;; Code:
 
 (require 'text-translator-site-google-com)
-(require 'text-translator-site-yahoo-com)
 (require 'text-translator-site-freetranslation-com)
 (require 'text-translator-site-livedoor-com)
 (require 'text-translator-site-fresheye-com)
 (require 'text-translator-site-excite-cojp)
+
+(require 'text-translator-site-lou5-jp)
+(require 'text-translator-site-tatoeba-org)
+(require 'text-translator-site-traduku-net)
 
 ;; Variables:
 
@@ -38,7 +41,6 @@
   (let ((res '()))
     (dolist (site
              `(,text-translator-site-google-com
-               ,text-translator-site-yahoo-com
                ,text-translator-site-freetranslation-com
                ,text-translator-site-livedoor-com
                ,text-translator-site-fresheye-com
@@ -51,9 +53,9 @@ described. To update site-data, evalute `text-translator-site-data-init`."
   :type '(repeat
           (list :tag "Web Site"
                 (string :tag "Web site name and translation type")
-                (string :tag "Host name")
-                (string :tag "POST path and HTTP version")
-                (string :tag "POST contents")
+                (string :tag "HTTP method (GET or POST)")
+                (string :tag "Request URL")
+                (string :tag "Parameter of HTTP request")
                 (symbol :tag "Character code")
                 (choice (string :tag "regexp") (symbol :tag "function"))
                 (list :tag (concat "The correspondence of translation-able "
@@ -64,53 +66,22 @@ described. To update site-data, evalute `text-translator-site-data-init`."
   :group 'text-translator)
 
 (defcustom text-translator-site-data-minimum-alist
-  '(;; lou5.jp (Japanese, Lou)
-    ("lou5.jp_*normal"
-     "lou5.jp"
-     "/ HTTP/1.1"
-     "v=1&text=%s"
-     utf-8
-     (lambda ()
-       (text-translator-extract-tag-exclusion-string
-        "<p class=\"large align-left box\">\\(\\(.\\|\n\\)*?\\)</p>"
-        t)))
-
-    ;; tatoeba.org (Furigana, romaji)
-    ("tatoeba.org_furigana"
-     "tatoeba.org"
-     "/eng/tools/romaji_furigana?query=%s&type=furigana HTTP/1.1"
-     nil
-     utf-8
-     "class=\"furigana\">\\(\\(.\\|\n\\)*?\\)</div><form id=\"ToolRomajiFuriganaForm")
-    ("tatoeba.org_romaji"
-     "tatoeba.org"
-     "/eng/tools/romaji_furigana?query=%s&type=romaji HTTP/1.1"
-     nil
-     utf-8
-     "class=\"furigana\">\\(\\(.\\|\n\\)*?\\)</div><form id=\"ToolRomajiFuriganaForm")
-
-    ;; traduku.net (Esperanto, English)
-    ("traduku.net_eoen"
-     "traduku.net"
-     "/cgi-bin/traduku HTTP/1.1"
-     "eo_en&t=%s"
-     utf-8
-     " id=\"rezulto\">\\(\\(.\\|\n\\)*?\\)</div>")
-    ("traduku.net_eneo"
-     "traduku.net"
-     "/cgi-bin/traduku HTTP/1.1"
-     "en_eo_trukilo&t=%s"
-     utf-8
-     " id=\"rezulto\">\\(\\(.\\|\n\\)*?\\)</div>"))
-
+  (let ((res '()))
+    (dolist (site
+             `(,text-translator-site-lou5-jp
+               ,text-translator-site-tatoeba-org
+               ,text-translator-site-traduku-net))
+      (dolist (def site)
+        (push def res)))
+    (nreverse res))
   "*The alist where setting of the site which is used for text translation is
 described. To update site-data, evalute `text-translator-site-data-init`."
   :type  '(repeat
            (list :tag "Web Site"
                  (string :tag "Web site name and translation type")
-                 (string :tag "Host name")
-                 (string :tag "POST path and HTTP version")
-                 (string :tag "POST contents")
+                 (string :tag "Request URL")
+                 (string :tag "HTTP method (GET or POST)")
+                 (string :tag "Parameter of HTTP request")
                  (symbol :tag "Character code")
                  (choice (string :tag "regexp") (symbol :tag "function"))))
   :group 'text-translator)

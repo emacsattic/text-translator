@@ -38,11 +38,11 @@
 
 (defvar text-translator-test-google.com
   '("google.com" .
-    (("en" "ja" "Japan" "日本の")
+    (("en" "ja" "Japan" "日本")
      ("ja" "en" "日本" "Japan")
      ("en" "es" "Japan" "Japón")
      ("es" "en" "Japón" "Japan")
-     ("en" "fr" "Japan" "Le Japon")
+     ("en" "fr" "Japan" "Japon")
      ("fr" "en" "Le Japon" "Japan")
      ("en" "de" "English" "Englisch")
      ("de" "en" "Englisch" "English")
@@ -50,8 +50,8 @@
      ("it" "en" "Inglese" "English")
      ("en" "ar" "Japan" "اليابان")
      ("ar" "en" "اللغة الإنجليزية" "English")
-     ("de" "fr" "Englisch" "Anglaise")
-     ("fr" "de" "En anglais" "Englisch")
+     ("de" "fr" "Englisch" "Anglais")
+     ("fr" "de" "En anglais" "Auf Englisch")
      ("en" "pt" "Japan" "Japão")
      ("pt" "en" "Japão" "Japan")
      ("en" "ru" "Japan" "Япония")
@@ -59,7 +59,7 @@
      ("en" "ko" "Japan" "일본")
      ("ko" "en" "일본" "Japan")
      ("en" "ch" "Hello, World" "你好，世界")
-     ("ch" "en" "你好，世界" "Hello, World")
+     ("ch" "en" "你好，世界" "Hello, world")
      ("en" "tw" "China" "中國")
      ("tw" "en" "中國" "China")
      ("ch" "tw" "中国" "中國")
@@ -129,7 +129,7 @@
   '("livedoor.com" .
     (("en" "ja" "English" "英語")
      ("ja" "en" "英語" "English")
-     ("ja" "ko" "英語" "영어 ")
+     ("ja" "ko" "英語" "영어")
      ("ko" "ja" "영어" "英語")
      ("ja" "ch" "英語" "英语")
      ("ch" "ja" "英语" "英語")
@@ -184,7 +184,7 @@
      ("en" "de" "English" "Englisch")
      ("de" "en" "Englisch" "English")
      ("ja" "it" "日本" "Giappone")
-     ("it" "ja" "Giappone" "日本")
+     ("it" "ja" "Giappone" "ジャパン")
      ("en" "it" "Japan" "Giappone")
      ("it" "en" "Giappone" "Japan")
      ("ja" "es" "日本" "Japón")
@@ -207,16 +207,6 @@
      ("ko" "ja" "영어" "英語")))
   "The test data of yahoo.co.jp.")
 
-(defvar text-translator-test-ocn.ne.jp
-  '("ocn.ne.jp" .
-    (("en" "ja" "English" "英語\n")
-     ("ja" "en" "英語" "English")
-     ("ja" "ch" "英語" "英语")
-     ("ch" "ja" "英语" "英語")
-     ("ja" "ko" "英語" "영어 ")
-     ("ko" "ja" "영어" "英語")))
-  "The test data of ocn.ne.jp.")
-
 (defvar text-translator-test-lou5.jp
   '("lou5.jp" .
     (("*normal" "" "空が青い。" "ホールがブルー。\n\n")))
@@ -225,7 +215,7 @@
 (defvar text-translator-test-tatoeba.org
   '("tatoeba.org" .
     (("furigana" "" "日本語" "日本語[にほんご]")
-     ("romaji"   "" "日本語" "nihongo")))
+     ("romaji"   "" "日本語" "ニホンゴ")))
   "The test data of tatoeba.org.")
 
 (defvar text-translator-test-traduku.net
@@ -249,13 +239,9 @@
             after  (nth 3 i))
       (when (and before after)
         (cond
-         ((not (string=
-                (setq translated
-                      (prog2
-                          (text-translator-timeout-start)
-                          (text-translator-client engine before nil t)
-                        (text-translator-timeout-stop)))
-                after))
+         ((not (string= (setq translated
+                              (text-translator-client engine before nil t))
+                        after))
           (princ (format "NG: %s: '%s' != '%s'\n"
                          engine after translated))
           (setq errors (cons (cons (nth 0 i) (nth 1 i)) errors)))
@@ -281,13 +267,6 @@
 
 (defun text-translator-test-google.com ()
   (let ((site-val text-translator-test-google.com))
-    (princ (format ";; %s\n" (car site-val)))
-    (text-translator-test-internal (car site-val) (cdr site-val))))
-
-(defun text-translator-test-yahoo.com ()
-  (let ((site-val text-translator-test-yahoo.com)
-        (text-translator-timeout-interval 5)
-        (sleep-wait 3))
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val))))
 
@@ -318,11 +297,6 @@
     (princ (format ";; %s\n" (car site-val)))
     (text-translator-test-internal (car site-val) (cdr site-val))))
 
-(defun text-translator-test-ocn.ne.jp ()
-  (let ((site-val text-translator-test-ocn.ne.jp))
-    (princ (format ";; %s\n" (car site-val)))
-    (text-translator-test-internal (car site-val) (cdr site-val))))
-
 (defun text-translator-test-lou5.jp ()
   (let ((site-val text-translator-test-lou5.jp))
     (princ (format ";; %s\n" (car site-val)))
@@ -343,13 +317,10 @@
   (interactive)
   (progn
     (text-translator-test-google.com)
-    (text-translator-test-yahoo.com)
     (text-translator-test-freetranslation.com)
     (text-translator-test-livedoor.com)
     (text-translator-test-fresheye.com)
     (text-translator-test-excite.co.jp)
-;;    (text-translator-test-yahoo.co.jp)
-    (text-translator-test-ocn.ne.jp)
     (text-translator-test-lou5.jp)
     (text-translator-test-tatoeba.org)
     (text-translator-test-traduku.net)

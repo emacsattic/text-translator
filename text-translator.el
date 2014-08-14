@@ -29,6 +29,8 @@
 
 ;;; Code:
 
+(require 'url-queue)
+
 (require 'text-translator-vars)
 (require 'text-translator-window)
 
@@ -99,7 +101,7 @@ Use Excite, Google and so translation site.
            (string= str (nth 1 (caar text-translator-all-history)))
            (string= engine (nth 0 (caar text-translator-all-history))))
       (setq text-translator-all-results
-            (list (cons (concat text-translator-buffer engine)
+            (list (cons engine
                         (nth 2 (assoc engine
                                       (car text-translator-all-history))))))
       (funcall text-translator-display-function))
@@ -111,8 +113,7 @@ Use Excite, Google and so translation site.
            (functionp engine-or-func)
            (funcall engine-or-func engine str))
       engine)
-     str)
-    (text-translator-timeout-start)))))
+     str)))))
 
 (defun text-translator-translate-by-auto-selection (arg)
   "Function that translates by auto selection of translation
@@ -203,8 +204,7 @@ the selected type."
          ;; Newly translating
          (t
           (dolist  (i sites)
-            (text-translator-client i str t))
-          (text-translator-timeout-start)))))))
+            (text-translator-client i str t))))))))
 
 (defun text-translator-all-by-auto-selection (arg)
   "The function to translate in all of translate sites, whose
@@ -221,164 +221,133 @@ is the value of `text-translator-auto-selection-func'."
   "Function that throws out words and phrases that want to translate into
 specified site, and receives translation result."
   (let* ((history-delete-duplicates t)
-         (work-buf (concat " " text-translator-buffer engine))
-         (str (text-translator-replace-string
-               str
-               (cond
-                ((not text-translator-do-fill-region)
-                 text-translator-pre-string-replace-alist)
-                ;; For example, if engine is "excite.co.jp_enja",
-                ;; this code returns "en".
-                ((member (substring
-                          (text-translator-get-engine-type-or-site engine) 0 2)
-                         text-translator-space-division-languages)
-                 ;; replace "\n" to " ".
-                 (append '(("\n" . " ") ("\r" . ""))
-                         text-translator-pre-string-replace-alist))
-                (t
-                 ;; replace "\n" to "".
-                 (append '(("\n" . "") ("\r" . ""))
-                         text-translator-pre-string-replace-alist)))))
-         (type (assoc engine text-translator-site-data-alist))
-         (proc (open-network-stream (concat text-translator-buffer engine)
-                                    work-buf
-                                    (or text-translator-proxy-server
-                                        (nth 1 type))
-                                    (or (and text-translator-proxy-server
-                                             text-translator-proxy-port)
-                                        80)))
-         (process-connection-type nil)
-         (enc-str (text-translator-url-encode-string str (nth 4 type)))
-         (post-str (if (nth 3 type) (format (nth 3 type) enc-str) nil))
          (truncate-partial-width-windows nil)
+         (str    (text-translator-client-preprocess-string engine str))
+         (config (assoc engine text-translator-site-data-alist))
+         (url    (nth 1 config))
+         (method (nth 2 config))
+         (coding (nth 4 config))
+         (param  (format (nth 3 config)
+                         (text-translator-url-encode-string str coding)))
          (text-translator-display-function
           (if sync 'ignore text-translator-display-function)))
-    ;; Initalize temporary variables
     (setq text-translator-all-before-string
-          (cons (list (process-name proc) engine str)
-                text-translator-all-before-string)
+          (cons `(,engine . ,str) text-translator-all-before-string)
           text-translator-processes-alist
-          (cons (cons (process-name proc) nil)
-                text-translator-processes-alist)
+          (cons `(,engine ,nil) text-translator-processes-alist)
           text-translator-all-results
-          (cons (cons (process-name proc) nil)
-                text-translator-all-results))
-    (with-current-buffer (get-buffer-create work-buf)
-      (erase-buffer)
-      (set-process-coding-system proc (nth 4 type) 'binary)
-      (set-process-filter proc 'text-translator-client-filter)
-      (process-send-string
-       proc
-       (setq text-translator-send-string
-             (concat
-              (cond
-               (post-str
-                ;; use POST method
-                (concat "POST "
-                        (if text-translator-proxy-server
-                            (concat "http://" (nth 1 type) (nth 2 type))
-                          (nth 2 type))
-                        "\r\n"))
-               (t
-                ;; use GET method
-                (concat "GET "
-                        (format
-                         (if text-translator-proxy-server
-                             (concat "http://" (nth 1 type) (nth 2 type))
-                           (nth 2 type))
-                         enc-str)
-                        "\r\n")))
-              (and text-translator-proxy-server
-                   text-translator-proxy-user
-                   text-translator-proxy-password
-                   (format "Proxy-Authorization: Basic %s \r\n"
-                           (base64-encode-string
-                            (concat text-translator-proxy-user ":"
-                                    text-translator-proxy-password))))
-              "HOST: " (nth 1 type) "\r\n"
-              "User-Agent: " text-translator-user-agent "\r\n"
-              "Accept-Encoding: " text-translator-accept-encoding "\r\n"
-              "Accept-Charset: " text-translator-accept-charset "\r\n"
-              "Keep-Alive: " text-translator-keep-alive "\r\n"
-              "Connection: " text-translator-connection "\r\n"
-              (when post-str
-                (concat
-                 "Content-Type: application/x-www-form-urlencoded\r\n"
-                 "Content-Length: "
-                 (number-to-string (string-bytes post-str)) "\r\n"
-                 "\r\n"
-                 post-str "\r\n"))
-              "\r\n")))
-      ;; Display only once (Countermesure for text-translator-all).
-      (when (and (not sync)
-                 (= 1 (length text-translator-processes-alist)))
-        (message "Translating..."))
-      ;; If `sync' was `t', Synchronize a output.
-      (when (and sync (not all))
-        (while (not (cdar text-translator-all-results))
-          (sit-for 0.1))
-        (cdar text-translator-all-results)))))
+          (cons `(,engine . ,nil) text-translator-all-results))
+    (text-translator-client-request engine url method param)
+    ;; Display only once (Countermesure for text-translator-all).
+    (when (and (not sync) (= 1 (length text-translator-processes-alist)))
+      (message "Translating..."))
+    ;; If `sync' was `t', Synchronize a output.
+    (when (and sync (not all))
+      (while (not (cdar text-translator-all-results))
+        ;; url-queue-retrieve of url-queue.el use run-with-idle-timer.
+        ;; In synchronize mode of text-translator, it is not move idle
+        ;; state (waits by busy loop using sit-for). So, we call
+        ;; url-queue-run-queue directly. url-queue-run-queue is a
+        ;; callback function that registered in the run-with-idle-timer.
+        (url-queue-run-queue)
+        (sit-for 0.01 t))
+      (cdar text-translator-all-results))))
 
-(defun text-translator-client-filter (proc str)
-  (let (buf-name buf-bytes buf-string content-len chunk-len all parse-method)
-    (with-current-buffer (process-buffer proc)
-      (goto-char (process-mark proc))
-      (insert str)
-      (set-marker (process-mark proc) (point))
-      ;; Initialize a variable
-      (setq buf-name     (buffer-name)
-            all          (> text-translator-all-site-number 1)
-            content-len  (cadr (assoc "Content-Length"
-                                      (text-translator-proc-header-get
-                                       (process-name proc))))
-            buf-bytes    (if content-len (string-bytes (buffer-string)))
-            parse-method (nth 5
-                              (assoc
-                               (substring buf-name
-                                          ;; Plus a 1 space " " length.
-                                          (1+ (length text-translator-buffer))
-                                          (length buf-name))
-                               text-translator-site-data-alist)))
-      ;; Header line or chunk-length
+(defun text-translator-client-request (engine url method param)
+  (let ((url-request-method method)
+        (url-request-extra-headers
+         `(("Content-Type"    . "application/x-www-form-urlencoded")
+           ("User-Agent"      . ,text-translator-user-agent)
+           ("Accept-Encoding" . ,text-translator-accept-encoding)
+           ("Accept-Charset"  . ,text-translator-accept-charset)
+           ("Keep-Alive"      . ,text-translator-keep-alive)
+           ("Connection"      . ,text-translator-connection)))
+        (url-request-data (if (string= method "GET") nil param))
+        (url-proxy-services url-proxy-services)
+        (url-queue-parallel-processes 100) ; unlimited
+        (url-queue-timeout text-translator-timeout-interval))
+    (when (and text-translator-proxy-server text-translator-proxy-port)
+      (setq url-proxy-services
+            (cons "http"
+                  (format "%s:%s/"
+                          ,text-translator-proxy-server
+                          ,text-translator-proxy-port))))
+    (when (and text-translator-proxy-user text-translator-proxy-password)
+      (push (cons "Proxy-Authorization" .
+                  (format "Basic %s"
+                          (base64-encode-string
+                           (concat text-translator-proxy-user ":"
+                                   text-translator-proxy-password))))
+            url-request-extra-headers))
+    (when (string= method "GET")
+      (setq url (concat url "?" param)))
+    (url-queue-retrieve url #'text-translator-client-callback
+                        (list engine)
+                        nil t)))
+
+(defun text-translator-client-callback (&optional stattus engine)
+  (let* ((buf    (current-buffer))
+         (config (assoc engine text-translator-site-data-alist))
+         (all    (> text-translator-all-site-number 1))
+         (str    "")
+         (err    (plist-get status :error))
+         (coding (nth 4 config))
+         (parser (nth 5 config)))
+    (cond
+     ((or (not (null status)) err)
       (cond
-       ((null (text-translator-proc-header-get (process-name proc)))
-        (setq chunk-len (text-translator-proc-header-parse
-                         proc buf-name text-translator-debug)))
+       ((eq (nth 1 err) 'url-queue-timeout)
+        (setq str "TRANSLATION: TIMEOUT"))
        (t
-        (when (null content-len)
-          (setq chunk-len (text-translator-proc-chunk-get
-                           buf-name text-translator-debug))
-          (when text-translator-debug
-            (message ";; chunk-len: %s" chunk-len)))))
-      (setq buf-string (buffer-string))
-      ;; Extract a translated string.
-      (with-temp-buffer
-        (insert (text-translator-decode-string buf-string (process-name proc)))
-        (setq str (text-translator-replace-string
-                   (or (cond
-                        ((functionp parse-method)
-                         (funcall parse-method))
-                        ((re-search-backward parse-method nil t)
-                         (match-string 1)))
-                       "")
-                   text-translator-post-string-replace-alist))))
-    ;; Clean up
-    (when (or (not (string= "" str))
-              (and content-len
-                   (> 100 (abs (- buf-bytes (string-to-number content-len)))))
-              (and chunk-len (string= "0" chunk-len)))
-      (delete-process proc)
-      (unless text-translator-debug
-        ;; Todo: Should I save a log before killing a buffer?
-        (kill-buffer buf-name))
-      (when (string= "" str)
-        (setq str "TRANSLATION: FAILED")))
-    ;; Display translated string
+        (setq str (format "TRANSLATION: FAILED (%s)" (nth 1 err))))))
+     (t
+      (unwind-protect
+          (setq str (text-translator-client-matcher buf parser coding))
+        (unless text-translator-debug
+          (kill-buffer buf)))
+      (when (or (null str) (string= "" str))
+        (setq str "TRANSLATION: FAILED"))))
     (when (not (string= "" str))
       (when text-translator-all-results
-        (when (assoc (process-name proc) text-translator-all-results)
-          (setcdr (assoc (process-name proc) text-translator-all-results) str))
+        (when (assoc engine text-translator-all-results)
+          (setcdr (assoc engine text-translator-all-results) str))
         (text-translator-display all)))))
+
+(defun text-translator-client-preprocess-string (engine str)
+  ;; For example, if engine is "excite.co.jp_enja",
+  ;; this code returns "en".
+  (let* ((lang (substring (text-translator-get-engine-type-or-site engine)
+                         0 2))
+         (rep (cond
+               ((not text-translator-do-fill-region)
+                text-translator-pre-string-replace-alist)
+               ((member lang text-translator-space-division-languages)
+                ;; replace "\n" to " ".
+                (append '(("\n" . " ") ("\r" . ""))
+                        text-translator-pre-string-replace-alist))
+               (t
+                ;; replace "\n" to "".
+                (append '(("\n" . "") ("\r" . ""))
+                        text-translator-pre-string-replace-alist)))))
+    (text-translator-replace-string str rep)))
+
+(defun text-translator-client-matcher (buf parser coding)
+  (with-current-buffer buf
+    (when (re-search-forward "^\r?\n" nil t)
+      (backward-char 1))
+    (let ((str (decode-coding-string (buffer-substring (point) (point-max))
+                                     coding)))
+      (with-temp-buffer
+        (insert str)
+        (goto-char (point-min))
+        (text-translator-replace-string
+         (or (cond
+              ((functionp parser)
+               (funcall parser))
+              ((re-search-forward parser nil t)
+               (match-string 1)))
+             "")
+         text-translator-post-string-replace-alist)))))
 
 (defun text-translator-display (all)
   (ding)
@@ -386,7 +355,6 @@ specified site, and receives translation result."
   (cond
    (all
     (when (not (member 'nil (mapcar 'cdr text-translator-all-results)))
-      (text-translator-timeout-stop)
       (text-translator-add-history)
       (cond
        (text-translator-display-function
@@ -394,7 +362,6 @@ specified site, and receives translation result."
        (t
         (text-translator-window-display)))))
    (t
-    (text-translator-timeout-stop)
     (text-translator-add-history)
     (cond
      (text-translator-display-function
@@ -407,14 +374,13 @@ specified site, and receives translation result."
          #'(lambda ()
              (mapcar
               #'(lambda (i)
-                  (let ((pname (car i)) (tstring (cdr i)) match)
+                  (let* ((engine  (car i))
+                         (tstring (cdr i))
+                         (match   (assoc engine
+                                         text-translator-all-before-string)))
                     ;; match is '(engine before-string).
-                    (when (setq match
-                                (assoc pname
-                                       text-translator-all-before-string))
-                      (when (cdr match)
-                        (nreverse (cons tstring
-                                        (nreverse (cdr match))))))))
+                    (when (and match (cdr match))
+                      (list engine (cdr match) tstring))))
               text-translator-all-results))))
     (cond
      (text-translator-all-history
@@ -452,98 +418,6 @@ specified site, and receives translation result."
         (when (bufferp buf)
           (kill-buffer buf))))))
 
-(defun text-translator-proc-header-get (proc-name &optional alist)
-  (cdr (assoc proc-name (or alist text-translator-processes-alist))))
-
-(defun text-translator-proc-header-set (proc-name value &optional alist)
-  (when (assoc proc-name (or alist text-translator-processes-alist))
-    (setcdr (assoc proc-name (or alist text-translator-processes-alist))
-            value)))
-
-(defun text-translator-proc-header-parse (proc buf-name
-                                               &optional not-delete-header)
-  (with-current-buffer (get-buffer buf-name)
-    (goto-char (point-min))
-    (when (re-search-forward
-           "^\\([\n\r]\\([0-9a-fA-F]+\\)?[ \t]*\\([\n\r]\\)?\\)"
-           nil t)
-      (let ((header (buffer-substring (point-min) (match-beginning 1)))
-            (chunk-len (match-string 2)))
-        (unless not-delete-header
-          (delete-region (point-min) (match-end 0)))
-        (text-translator-proc-header-set
-         (process-name proc)
-         (let (lis)
-           (dolist (i (split-string header "\n" t))
-             (setq lis (cons (split-string i ": ") lis)))
-           (nreverse lis)))
-        (when text-translator-debug
-          (message ";; text-translator-proc-header-parse: chunk-len %s"
-                   chunk-len))
-        chunk-len))))
-
-(defun text-translator-proc-chunk-get (buf-name &optional not-delete-header)
-  (with-current-buffer (get-buffer buf-name)
-    (goto-char (point-max))
-    (cond
-     ((re-search-backward "\\([\n\r]\\([0-9a-f]+\\)[ \t]*[\n\r]\\)" nil t)
-      (let ((chunk-len (match-string 2)))
-        (unless not-delete-header
-          (delete-region (match-beginning 0) (match-end 0)))
-        (when text-translator-debug
-          (message ";; text-translator-proc-chunk-get: t"))
-        chunk-len))
-     (t
-      ;; Dispite Transfer-Encoding is chunked, size did not exist.
-      ;; Wait the chunk coming.
-      (when text-translator-debug
-        (message ";; text-translator-proc-chunk-get: t"))))))
-
-(defun text-translator-timeout-start ()
-  (when text-translator-timeout-interval
-    (or text-translator-timeout
-        (setq text-translator-timeout
-              (run-with-timer text-translator-timeout-interval
-                              text-translator-timeout-interval
-                              'text-translator-timeout)))))
-
-(defun text-translator-timeout ()
-  (when text-translator-timeout-interval
-    (condition-case err
-        (progn
-          (text-translator-proc-clear)
-          (text-translator-timeout-stop)
-          ;; Insert a timeout message.
-          (dolist (i text-translator-all-results)
-            (when (null (cdr i))
-              (setcdr i "TRANSLATION: TIMEOUT")))
-          ;; Displaying translated string.
-          (text-translator-display (> text-translator-all-site-number 1)))
-      (error (message "Error: %S: text-translator-timeout." err)))))
-
-(defun text-translator-timeout-stop ()
-  (when text-translator-timeout
-    (cancel-timer text-translator-timeout)
-    (setq text-translator-timeout nil)))
-
-(defun text-translator-decode-string (str name)
-  (let* ((header (text-translator-proc-header-get name))
-         (content-type (if header (assoc "Content-Type" header)))
-         (http-charset (when (and content-type
-                                  (string-match "charset=\\([^ ]*\\)$"
-                                                (cadr content-type)))
-                         (match-string 1 (cadr content-type))))
-         (charset (when http-charset
-                    (cdr (assoc http-charset
-                                text-translator-charset-alist)))))
-    (cond
-     (charset
-      (when text-translator-debug
-        (message ";; charset %s (%s)" http-charset charset))
-      (decode-coding-string str charset))
-     (t
-      str))))
-
 (defun text-translator-replace-string (str replace)
   "Function that converts character string specified for argument STR
 according to rule REPLACE."
@@ -554,7 +428,7 @@ according to rule REPLACE."
     (buffer-string)))
 
 (defun text-translator-extract-tag-exclusion-string (regex &optional dont-convert-br)
-  (when (re-search-backward regex nil t)
+  (when (re-search-forward regex nil t)
     ;; first: convert <br> tag to '\n' (when variable dont-convert-br is nil)
     ;; second: convert any another tags to empty string.
     (let ((matchstr (match-string 1)))
@@ -606,38 +480,40 @@ Otherwise return a translation site name."
   (setq text-translator-site-data-alist
         text-translator-site-data-minimum-alist)
   (dolist (site text-translator-site-data-template-alist)
-    (let ((tt-convert-name '(lambda (lang)
-                            (let ((match-lang (assoc lang
-                                                     (nth 7 site))))
-                              (if match-lang
-                                  (cdr match-lang)
-                                lang))))
-        (tt-replace-string '(lambda (pstr olang tlang)
-                              (when olang
-                                (setq pstr
-                                    (replace-regexp-in-string "%o"
-                                                              olang
-                                                              pstr)))
-                              (when tlang
-                                (setq pstr
-                                    (replace-regexp-in-string "%t"
-                                                              tlang
-                                                              pstr))
-                                pstr)))
-        tt-alist)
-    (dolist (i (nth 6 site))
-      (add-to-list 'text-translator-site-data-alist
-                   (list (format "%s"
-                                 (concat (nth 0 site)
-                                         "_"
-                                         (funcall tt-convert-name (car i))
-                                         (funcall tt-convert-name (cdr i))))
-                         (nth 1 site)
-                         (nth 2 site)
-                         (funcall tt-replace-string
-                                  (nth 3 site) (car i) (cdr i))
-                         (nth 4 site)
-                         (nth 5 site)))))))
+    (let ((tt-convert-name
+           #'(lambda (lang)
+               (let ((match-lang (assoc lang (nth 7 site))))
+                 (if match-lang
+                     (cdr match-lang)
+                   lang))))
+          (tt-replace-string
+           #'(lambda (pstr olang tlang)
+               (when olang
+                 (setq pstr (replace-regexp-in-string "%o" olang pstr)))
+               (when tlang
+                 (setq pstr (replace-regexp-in-string "%t" tlang pstr))
+                 pstr)))
+          engine param config)
+      (dolist (i (nth 6 site))
+        ;; 0 ... engine
+        ;; 1 ... url
+        ;; 2 ... method
+        ;; 3 ... param
+        ;; 4 ... coding
+        ;; 5 ... extract function
+        (setq engine (concat (nth 0 site)
+                             "_"
+                             (funcall tt-convert-name (car i))
+                             (funcall tt-convert-name (cdr i)))
+              param  (funcall tt-replace-string (nth 3 site) (car i) (cdr i))
+              config
+              (list engine
+                    (nth 2 site)
+                    (nth 1 site)
+                    param
+                    (nth 4 site)
+                    (nth 5 site)))
+        (add-to-list 'text-translator-site-data-alist config)))))
 (text-translator-site-data-init)        ; init
 
 (provide 'text-translator)

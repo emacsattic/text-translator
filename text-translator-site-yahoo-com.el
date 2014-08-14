@@ -36,8 +36,8 @@
 
 (defvar text-translator-site-yahoo-com
   `(("yahoo.com"
-     "babelfish.yahoo.com"
-     "/translate_txt HTTP/1.1"
+     "GET"
+     "http://babelfish.yahoo.com/translate_txt/"
      ,text-translator-site-yahoo-com--request
      utf-8-dos
      text-translator-site-yahoo-com--extract

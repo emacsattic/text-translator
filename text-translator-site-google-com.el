@@ -29,6 +29,7 @@
                "prev=_t"
                "hl=ja"
                "ie=UTF-8"
+               "oe=UTF-8"
                "text=%s"
                "file="
                "sl=%o"
@@ -37,8 +38,8 @@
 
 (defvar text-translator-site-google-com
   `(("google.com"
-     "translate.google.com"
-     "/ HTTP/1.1"
+     "GET"
+     "https://translate.google.com/"
      ,text-translator-site-google-com--request
      utf-8-dos
      text-translator-site-google-com--extract

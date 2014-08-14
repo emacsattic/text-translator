@@ -46,8 +46,8 @@
 
 (defvar text-translator-site-freetranslation-com
   `(("freetranslation.com"
-     "ets.freetranslation.com"
-     "/ HTTP/1.1"
+     "GET"
+     "http://ets.freetranslation.com/"
      ,text-translator-site-freetranslation-com--request
      utf-8
      text-translator-site-freetranslation-com--extract
@@ -68,8 +68,8 @@
       ("Norwegian"  . "no")))
 
     ("freetranslation.com"
-     "ets6.freetranslation.com"
-     "/ HTTP/1.1"
+     "GET"
+     "http://ets6.freetranslation.com/"
      ,text-translator-site-freetranslation-com--request
      utf-8
      text-translator-site-freetranslation-com--extract
@@ -82,8 +82,8 @@
       ("TraditionalChinese" . "tw")))
 
     ("freetranslation.com"
-     "tets9.freetranslation.com"
-     "/ HTTP/1.1"
+     "GET"
+     "http://tets9.freetranslation.com/"
      ,text-translator-site-freetranslation-com--request
      utf-8-dos
      text-translator-site-freetranslation-com--extract

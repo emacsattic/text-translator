@@ -31,8 +31,8 @@
 
 (defvar text-translator-site-yahoo-cojp
   '(("yahoo.co.jp"
-     "honyaku.yahoo.co.jp"
-     "/transtext HTTP/1.1"
+     "GET"
+     "http://honyaku.yahoo.co.jp//transtext/"
      "both=TH&text=%s&clearFlg=1&eid=CR-%o%t"
      utf-8
      text-translator-site-yahoo-cojp--extract

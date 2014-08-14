@@ -76,7 +76,8 @@ test :
 	$(EMACS) $(BATCH_FLAGS)                               \
 		-eval '(setq load-path (cons "." load-path))' \
 		-l text-translator-test                       \
-		-eval '(text-translator-test)' 2> /dev/null
+		-eval '(text-translator-test)'
+#		-eval '(text-translator-test)' 2> /dev/null
 
 %.elc: %.el
 	$(EMACS) $(BATCH_FLAGS) \

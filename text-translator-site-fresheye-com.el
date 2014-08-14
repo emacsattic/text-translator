@@ -25,8 +25,8 @@
 
 (defvar text-translator-site-fresheye-com
   '(("fresheye.com"
-     "mt.fresheye.com"
-     "/ft_result.cgi HTTP/1.1"
+     "GET"
+     "http://mt.fresheye.com/ft_result.cgi"
      "gen_text=%s&e=%o%t"
      utf-8-dos
      text-translator-site-fresheye-com--extract
@@ -34,8 +34,8 @@
      (("E" . "en") ("J" . "ja")))
 
     ("fresheye.com"
-     "mt.fresheye.com"
-     "/ft_cjresult.cgi HTTP/1.1"
+     "GET"
+     "http://mt.fresheye.com/ft_cjresult.cgi"
      "gen_text=%s&charset=gb2312&cjjc=%o%t"
      utf-8
      text-translator-site-fresheye-com--extract
@@ -43,8 +43,8 @@
      (("c" . "ch") ("j" . "ja")))
 
     ("fresheye.com"
-     "mt.fresheye.com"
-     "/ft_cjresult.cgi HTTP/1.1"
+     "GET"
+     "http://mt.fresheye.com/ft_cjresult.cgi"
      "gen_text=%s&charset=big5&cjjc=%o%t"
      utf-8
      text-translator-site-fresheye-com--extract
