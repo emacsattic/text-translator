@@ -915,10 +915,14 @@
   (let ((json (json-read))
         sentence)
     (when (setq sentence (assoc 'sentences json))
-      (let ((alist (aref (cdr sentence) 0))
-            trans)
-        (when (setq trans (assoc 'trans alist))
-          (cdr trans))))))
+      (let ((array (cdr sentence))
+            (trans ""))
+        (dotimes (i (length array))
+          (when (and (aref array i)
+                     (assoc 'trans (aref array i)))
+            (setq trans
+                  (concat trans (cdr (assoc 'trans (aref array i)))))))
+        trans))))
 
 (provide 'text-translator-site-google-com)
 
