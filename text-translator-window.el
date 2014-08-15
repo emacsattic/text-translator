@@ -65,15 +65,11 @@ result, please add a following code to your .emacs.
                    "\n\n")))
         (insert (text-translator-window-fill-text
                  (cdar text-translator-all-results)))
-        (setq engine (substring
-                      (caar text-translator-all-results)
-                      (length text-translator-buffer))))
+        (setq engine (caar text-translator-all-results)))
        (t
         (insert
          (mapconcat #'(lambda (x)
-                        (let ((engine (substring
-                                       (car x)
-                                       (length text-translator-buffer)))
+                        (let ((engine (car x))
                               (str (cdr x)))
                           (concat (propertize (format "----- %s -----" engine)
                                               'face font-lock-keyword-face)

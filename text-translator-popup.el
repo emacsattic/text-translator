@@ -55,8 +55,7 @@ result, please add a following code to your .emacs.
            (popup-tip
             (mapconcat
              #'(lambda (x)
-                 (let ((engine  (substring (car x)
-                                           (length text-translator-buffer)))
+                 (let ((engine  (car x))
                        (str     (cdr x)))
                    (concat "----- " engine " -----" "\n\n" str "\n")))
              (sort text-translator-all-results

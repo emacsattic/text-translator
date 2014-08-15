@@ -63,8 +63,7 @@ result, please add a following code to your .emacs.
     (text-translator-pos-tip-show
      (mapconcat
       #'(lambda (x)
-          (let ((engine  (substring (car x)
-                                    (length text-translator-buffer)))
+          (let ((engine  (car x))
                 (str     (cdr x)))
             (concat (propertize (concat "----- " engine " -----")
                                 'face text-translator-pos-tip-separator-face)
