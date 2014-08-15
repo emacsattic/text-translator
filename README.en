@@ -10,6 +10,16 @@ Put the following elisp files to your load-path directory.
  - text-translator-vars.el
  - text-translator-sites.el
  - text-translator-window.el
+ - text-translator-site-excite-cojp.el
+ - text-translator-site-freetranslation-com.el
+ - text-translator-site-fresheye-com.el
+ - text-translator-site-google-com.el
+ - text-translator-site-livedoor-com.el
+ - text-translator-site-lou5-jp.el
+ - text-translator-site-tatoeba-org.el
+ - text-translator-site-traduku-net.el
+ - text-translator-site-yahoo-cojp.el
+ - text-translator-site-yahoo-com.el
 
 You can use Makefile too.
 
@@ -36,6 +46,9 @@ that can be translates in the selected language.
 
 ** use proxy
 
+Basically, configuration is unnecessary. Because text-translator use
+config of url library.
+
 ;; ;; if you are setting environment variables HTTP_PROXY,
 ;; ;; you have not to set this.
 ;; (setq text-translator-proxy-server "proxy.hogehoge.com")
@@ -53,13 +66,11 @@ that can be translates in the selected language.
 * Translation sites.
 
 - google.com
-- yahoo.com
 - freetranslation.com
 - livedoor.com
 - fresheye.com
 - excite.co.jp
 - yahoo.co.jp (Currently not available)
-- ocn.ne.jp
 - lou5.jp
 - traduku.net
 

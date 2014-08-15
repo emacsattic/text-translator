@@ -9,6 +9,16 @@ text-translator は、インターネット上に存在するテキスト翻訳サービスを利用
  - text-translator-vars.el
  - text-translator-sites.el
  - text-translator-window.el
+ - text-translator-site-excite-cojp.el
+ - text-translator-site-freetranslation-com.el
+ - text-translator-site-fresheye-com.el
+ - text-translator-site-google-com.el
+ - text-translator-site-livedoor-com.el
+ - text-translator-site-lou5-jp.el
+ - text-translator-site-tatoeba-org.el
+ - text-translator-site-traduku-net.el
+ - text-translator-site-yahoo-cojp.el
+ - text-translator-site-yahoo-com.el
 
 Makefile も使えます。
 
@@ -36,6 +46,8 @@ Makefile も使えます。
 
 ** プロキシを使用する
 
+url library の設定を見るので、基本的には設定不要です。
+
 ;; ;; プロキシを使用する場合の設定例
 ;; ;; 環境変数 HTTP_PROXY を設定してある場合は、設定不要。
 ;; (setq text-translator-proxy-server "proxy.hogehoge.com")
@@ -52,13 +64,11 @@ Makefile も使えます。
 * 翻訳サイト
 
 - google.com
-- yahoo.com
 - freetranslation.com
 - livedoor.com
 - fresheye.com
 - excite.co.jp
 - yahoo.co.jp (現在利用不能)
-- ocn.ne.jp
 - lou5.jp
 - traduku.net
 
