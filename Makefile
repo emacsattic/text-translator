@@ -10,7 +10,6 @@ LISPDIR			=	$(prefix)/share/emacs/site-lisp
 INSTALLDIR		=	$(LISPDIR)/$(PACKAGE)
 
 EL			=	text-translator.el         \
-				text-translator-load.el    \
 				text-translator-sites.el   \
 				text-translator-vars.el    \
 				text-translator-window.el  \
