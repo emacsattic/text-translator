@@ -103,7 +103,7 @@ Use Excite, Google and so translation site.
             (list (cons engine
                         (nth 2 (assoc engine
                                       (car text-translator-all-history))))))
-      (funcall text-translator-display-function))
+      (text-translator-display))
      ;; Newly translating
      (t
       (text-translator-client
@@ -198,7 +198,7 @@ the selected type."
                                    (assoc i
                                           (car text-translator-all-history))))
                         text-translator-all-results)))
-          (funcall text-translator-display-function))
+          (text-translator-display t))
          ;; Newly translating
          (t
           (dolist  (i sites)
@@ -347,7 +347,7 @@ specified site, and receives translation result."
              "")
          text-translator-post-string-replace-alist)))))
 
-(defun text-translator-display (all)
+(defun text-translator-display (&optional all)
   (ding)
   (message "Translating...done")
   (cond
