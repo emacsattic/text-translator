@@ -23,15 +23,25 @@
 
 ;;; Code:
 
+(require 'json)
+
 (defconst text-translator-site-google-com--request
   (mapconcat #'identity
-             '("js=n"
-               "prev=_t"
-               "hl=ja"
+             '("client=p"
                "ie=UTF-8"
                "oe=UTF-8"
-               "text=%s"
-               "file="
+               "q=%s"
+               "dt=bd"
+               "dt=ex"
+               "dt=ld"
+               "dt=md"
+               "dt=qc"
+               "dt=rw"
+               "dt=rm"
+               "dt=ss"
+               "dt=t"
+               "dt=at"
+               "dt=sw"
                "sl=%o"
                "tl=%t")
              "&"))
@@ -39,7 +49,7 @@
 (defvar text-translator-site-google-com
   `(("google.com"
      "GET"
-     "https://translate.google.com/"
+     "https://translate.google.com/translate_a/t"
      ,text-translator-site-google-com--request
      utf-8-dos
      text-translator-site-google-com--extract
@@ -902,8 +912,13 @@
      (("zh-TW" . "tw") ("zh-CN" . "ch")))))
 
 (defun text-translator-site-google-com--extract ()
-  (text-translator-extract-tag-exclusion-string
-   "<span id=result_box[^>]*>\\(\\(<span [^>]*>\\([^<]\\|<br>\\)*</span>\\)+\\)</span>"))
+  (let ((json (json-read))
+        sentence)
+    (when (setq sentence (assoc 'sentences json))
+      (let ((alist (aref (cdr sentence) 0))
+            trans)
+        (when (setq trans (assoc 'trans alist))
+          (cdr trans))))))
 
 (provide 'text-translator-site-google-com)
 
