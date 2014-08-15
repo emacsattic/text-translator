@@ -266,7 +266,7 @@ specified site, and receives translation result."
     (when (and text-translator-proxy-server text-translator-proxy-port)
       (setq url-proxy-services
             (cons "http"
-                  (format "%s:%s/"
+                  (format "http://%s:%s/"
                           text-translator-proxy-server
                           text-translator-proxy-port))))
     (when (and text-translator-proxy-user text-translator-proxy-password)
