@@ -78,7 +78,6 @@ Use Excite, Google and so translation site.
                       (format "Select translation engine (default %s): "
                               engine)
                       text-translator-site-data-alist nil t nil nil engine))))
-    (text-translator-proc-clear)
     ;; Initialize (init global variable, delete running processess etc...).
     (setq str
           (cond
@@ -168,7 +167,6 @@ the selected type."
                  (text-translator-region-or-read-string)))
         keys)
     ;; Initalize global variable.
-    (text-translator-proc-clear)
     (setq text-translator-all-results       nil
           text-translator-all-site-number   nil
           text-translator-processes-alist   nil
@@ -406,17 +404,6 @@ specified site, and receives translation result."
 		    (puthash matched (list (car x)) hash))))))
           text-translator-site-data-alist)
     hash))
-
-(defun text-translator-proc-clear ()
-  (let (proc buf)
-    (when text-translator-processes-alist
-      (dolist (i text-translator-processes-alist)
-        (setq proc (get-process (nth 0 i))
-              buf  (get-buffer  (nth 0 i)))
-        (when (processp proc)
-          (delete-process proc))
-        (when (bufferp buf)
-          (kill-buffer buf))))))
 
 (defun text-translator-replace-string (str replace)
   "Function that converts character string specified for argument STR
