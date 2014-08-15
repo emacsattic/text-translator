@@ -13,7 +13,17 @@ EL			=	text-translator.el         \
 				text-translator-load.el    \
 				text-translator-sites.el   \
 				text-translator-vars.el    \
-				text-translator-window.el
+				text-translator-window.el  \
+				text-translator-site-excite-cojp.el \
+				text-translator-site-freetranslation-com.el \
+				text-translator-site-fresheye-com.el \
+				text-translator-site-google-com.el \
+				text-translator-site-livedoor-com.el \
+				text-translator-site-lou5-jp.el \
+				text-translator-site-tatoeba-org.el \
+				text-translator-site-traduku-net.el \
+				text-translator-site-yahoo-cojp.el \
+				text-translator-site-yahoo-com.el
 
 EL_EXT			=	text-translator-popup.el \
 				text-translator-pos-tip.el

@@ -230,11 +230,11 @@ specified site, and receives translation result."
          (text-translator-display-function
           (if sync 'ignore text-translator-display-function)))
     (setq text-translator-all-before-string
-          (cons `(,engine . ,str) text-translator-all-before-string)
+          (cons (cons engine str) text-translator-all-before-string)
           text-translator-processes-alist
-          (cons `(,engine ,nil) text-translator-processes-alist)
+          (cons (cons engine nil) text-translator-processes-alist)
           text-translator-all-results
-          (cons `(,engine . ,nil) text-translator-all-results))
+          (cons (cons engine nil) text-translator-all-results))
     (text-translator-client-request engine url method param)
     ;; Display only once (Countermesure for text-translator-all).
     (when (and (not sync) (= 1 (length text-translator-processes-alist)))
@@ -266,10 +266,10 @@ specified site, and receives translation result."
       (setq url-proxy-services
             (cons "http"
                   (format "%s:%s/"
-                          ,text-translator-proxy-server
-                          ,text-translator-proxy-port))))
+                          text-translator-proxy-server
+                          text-translator-proxy-port))))
     (when (and text-translator-proxy-user text-translator-proxy-password)
-      (push (cons "Proxy-Authorization" .
+      (push (cons "Proxy-Authorization"
                   (format "Basic %s"
                           (base64-encode-string
                            (concat text-translator-proxy-user ":"
