@@ -283,7 +283,7 @@ specified site, and receives translation result."
                         (list engine)
                         nil t)))
 
-(defun text-translator-client-callback (&optional stattus engine)
+(defun text-translator-client-callback (&optional status engine)
   (let* ((buf    (current-buffer))
          (config (assoc engine text-translator-site-data-alist))
          (all    (> text-translator-all-site-number 1))
