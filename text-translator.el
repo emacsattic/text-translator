@@ -127,15 +127,16 @@ English) translation.
 If alphabet ratio is over 40%, select engine which is translating from
 English to Japanese.  Otherwise, from Japanese to English."
   (let ((str (or str ""))
+        (regex "[^A-Za-z 0-9]+")
         (engine (text-translator-get-engine-type-or-site engine t))
         (site   (text-translator-get-engine-type-or-site engine))
         (percentage 40))
     (cond
      ((member site '("enja" "jaen" ""))
       (cond
-       ((> (/ (* (length (replace-regexp-in-string "[^A-Za-z 0-9]+" "" str))
-                   100)
-                (length str))
+       ((> (* (/ (float (length (replace-regexp-in-string regex "" str)))
+                 (length str))
+              100)
              percentage)
         (format "%s_enja" engine))
        (t
