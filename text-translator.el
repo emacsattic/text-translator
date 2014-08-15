@@ -107,12 +107,12 @@ Use Excite, Google and so translation site.
      ;; Newly translating
      (t
       (text-translator-client
-     (text-translator-check-valid-translation-engine
-      (and (not arg)
-           (functionp engine-or-func)
-           (funcall engine-or-func engine str))
-      engine)
-     str)))))
+       (text-translator-check-valid-translation-engine
+        (and (not arg)
+             (functionp engine-or-func)
+             (funcall engine-or-func engine str))
+        engine)
+       str)))))
 
 (defun text-translator-translate-by-auto-selection (arg)
   "Function that translates by auto selection of translation
@@ -193,7 +193,7 @@ the selected type."
                (member (nth 0 (caar text-translator-all-history)) sites))
           (dolist (i sites)
             (setq text-translator-all-results
-                  (cons (cons (concat text-translator-buffer i)
+                  (cons (cons i
                               (nth 2
                                    (assoc i
                                           (car text-translator-all-history))))
