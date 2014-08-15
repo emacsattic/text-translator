@@ -191,11 +191,6 @@ The default value is `nil'."
   :type 'symbol
   :group 'text-translator)
 
-(defcustom text-translator-timeout-interval 3.00
-  "*The translation timeout seconds."
-  :type 'integer
-  :group 'text-translator)
-
 (defcustom text-translator-debug nil
   "*Non-nil means showing debug messages."
   :type 'symbol
@@ -228,10 +223,6 @@ translation.")
 (defvar text-translator-sitedata-hash nil
   "The internal variable of `text-translator'.
 This value has hash table of translation site data.")
-
-(defvar text-translator-timeout nil
-  "The internal variable of `text-translator'.
-This variable used by the translation process monitoring timer.")
 
 (defvar text-translator-send-string nil
   "The debug purpose variable of `text-translator'.

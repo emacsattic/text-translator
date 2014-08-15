@@ -261,9 +261,7 @@ specified site, and receives translation result."
            ("Keep-Alive"      . ,text-translator-keep-alive)
            ("Connection"      . ,text-translator-connection)))
         (url-request-data (if (string= method "GET") nil param))
-        (url-proxy-services url-proxy-services)
-        (url-queue-parallel-processes 100) ; unlimited
-        (url-queue-timeout text-translator-timeout-interval))
+        (url-proxy-services url-proxy-services))
     (when (and text-translator-proxy-server text-translator-proxy-port)
       (setq url-proxy-services
             (cons "http"
