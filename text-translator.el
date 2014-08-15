@@ -307,7 +307,7 @@ specified site, and receives translation result."
       (when text-translator-all-results
         (when (assoc engine text-translator-all-results)
           (setcdr (assoc engine text-translator-all-results) str))
-        (text-translator-display all)))))
+        (text-translator-display all t)))))
 
 (defun text-translator-client-preprocess-string (engine str)
   ;; For example, if engine is "excite.co.jp_enja",
@@ -345,20 +345,22 @@ specified site, and receives translation result."
              "")
          text-translator-post-string-replace-alist)))))
 
-(defun text-translator-display (&optional all)
+(defun text-translator-display (&optional all hist)
   (ding)
   (message "Translating...done")
   (cond
    (all
     (when (not (member 'nil (mapcar 'cdr text-translator-all-results)))
-      (text-translator-add-history)
+      (when hist
+        (text-translator-add-history))
       (cond
        (text-translator-display-function
         (funcall text-translator-display-function))
        (t
         (text-translator-window-display)))))
    (t
-    (text-translator-add-history)
+    (when hist
+      (text-translator-add-history))
     (cond
      (text-translator-display-function
       (funcall text-translator-display-function))
