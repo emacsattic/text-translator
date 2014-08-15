@@ -307,7 +307,8 @@ specified site, and receives translation result."
       (when text-translator-all-results
         (when (assoc engine text-translator-all-results)
           (setcdr (assoc engine text-translator-all-results) str))
-        (text-translator-display all t)))))
+        (with-current-buffer (window-buffer)
+          (text-translator-display all t))))))
 
 (defun text-translator-client-preprocess-string (engine str)
   ;; For example, if engine is "excite.co.jp_enja",
