@@ -321,7 +321,7 @@
     (text-translator-test-livedoor.com)
     (text-translator-test-fresheye.com)
     (text-translator-test-excite.co.jp)
-    (text-translator-test-lou5.jp)
+    ;; (text-translator-test-lou5.jp)
     (text-translator-test-tatoeba.org)
     (text-translator-test-traduku.net)
     ))
