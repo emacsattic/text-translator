@@ -28,6 +28,7 @@
 (require 'text-translator-site-freetranslation-com)
 (require 'text-translator-site-livedoor-com)
 (require 'text-translator-site-fresheye-com)
+(require 'text-translator-site-yahoo-cojp)
 (require 'text-translator-site-excite-cojp)
 
 (require 'text-translator-site-lou5-jp)
@@ -44,6 +45,7 @@
                ,text-translator-site-freetranslation-com
                ,text-translator-site-livedoor-com
                ,text-translator-site-fresheye-com
+               ,text-translator-site-yahoo-cojp
                ,text-translator-site-excite-cojp))
       (dolist (def site)
         (push def res)))

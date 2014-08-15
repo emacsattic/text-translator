@@ -45,12 +45,7 @@
 
 (defun text-translator-site-yahoo-cojp--extract ()
   (text-translator-extract-tag-exclusion-string
-   (concat "<textarea "
-           "rows=12 "
-           "cols=30 "
-           "name=\"trn_text\" "
-           "id=\"trn_textText\" "
-           "class=\"smaller\"[ 	]*[^>]*>"
+   (concat "<textarea id=\"trn_textText\" [^>]*>"
            "\\([^<]*\\)"
            "</textarea>")))
 
