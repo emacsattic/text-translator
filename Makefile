@@ -10,6 +10,7 @@ LISPDIR			=	$(prefix)/share/emacs/site-lisp
 INSTALLDIR		=	$(LISPDIR)/$(PACKAGE)
 
 EL			=	text-translator.el         \
+				text-translator-load.el    \
 				text-translator-sites.el   \
 				text-translator-vars.el    \
 				text-translator-window.el  \
@@ -27,8 +28,7 @@ EL			=	text-translator.el         \
 EL_EXT			=	text-translator-popup.el \
 				text-translator-pos-tip.el
 
-EL_NOT_COMPILE		=	text-translator-load.el \
-				text-translator-test.el
+EL_NOT_COMPILE		=	text-translator-test.el
 ELC			=	$(EL:.el=.elc)
 
 ELC_EXT			=	$(EL_EXT:.el=.elc)
