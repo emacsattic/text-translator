@@ -25,6 +25,10 @@ Makefile も使えます。
  $ make
  $ make install
 
+popup.el と pos-tip.el サポートを使うなら、以下のコマンドが使えます。
+
+ $ make install-ext
+
 ** autoload を使う
 
 (require 'text-translator-load)

@@ -26,6 +26,11 @@ You can use Makefile too.
  $ make
  $ make install
 
+if you use popup.el or pos-tip.el support, you can use following
+command.
+
+ $ make install-ext
+
 ** use autoload
 
 (require 'text-translator-load)

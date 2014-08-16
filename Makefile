@@ -54,6 +54,9 @@ install : compile-el
 	fi
 	$(INSTALL) -m 644 $(EL) $(ELC) $(EL_NOT_COMPILE) $(INSTALLDIR)
 
+install-ext : compile-el-ext
+	$(INSTALL) -m 644 $(EL_EXT) $(ELC_EXT) $(INSTALLDIR)
+
 clean :
 	-$(RM) $(ELC) $(ELC_EXT) *.patch.gz $(PACKAGE)-*.tar.gz $(PACKAGE)-*.tar.bz2
 
@@ -86,7 +89,6 @@ test :
 		-eval '(setq load-path (cons "." load-path))' \
 		-l text-translator-test                       \
 		-eval '(text-translator-test)'
-#		-eval '(text-translator-test)' 2> /dev/null
 
 %.elc: %.el
 	$(EMACS) $(BATCH_FLAGS) \
