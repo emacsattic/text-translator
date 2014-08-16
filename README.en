@@ -59,6 +59,12 @@ config of url library.
 ;; (setq text-translator-proxy-server "proxy.hogehoge.com")
 ;; (setq text-translator-proxy-port   8080)
 
+** timeout setting for http request
+
+you can set url-queue-timeout. default value is 5 second.
+
+;; (setq url-queue-timeout 10)
+
 ** use translation type auto selection (english/japanese only)
 
 ;; set function that use auto selection

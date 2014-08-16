@@ -57,6 +57,12 @@ url library の設定を見るので、基本的には設定不要です。
 ;; (setq text-translator-proxy-server "proxy.hogehoge.com")
 ;; (setq text-translator-proxy-port   8080)
 
+** HTTP リクエストのタイムアウト設定
+
+url-queue-timeout に設定します。デフォルトは5秒です。
+
+;; (setq url-queue-timeout 10)
+
 ** 自動選択を使用する(日本語/英語のみ)
 
 ;; 自動選択に使用する関数を設定
